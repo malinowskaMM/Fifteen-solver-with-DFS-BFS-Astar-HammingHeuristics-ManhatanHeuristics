@@ -13,4 +13,11 @@ def generate_random_matrix():
     return matrix
 
 
+def check_valid(matrix):
+    if matrix == model_matrix:
+        return True
+    else:
+        return False
+
+
 print(generate_random_matrix())
