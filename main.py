@@ -1,13 +1,14 @@
+import math
 import random
 
 model_matrix_4x4 = [[1, 2, 3, 4],
                     [5, 6, 7, 8],
                     [9, 10, 11, 12],
                     [13, 14, 15, 0]]
-matrix_4x4 = [[1, 2, 3, 8],
+matrix_4x4 = [[1, 2, 3, 4],
               [5, 6, 7, 8],
-              [9, 9, 11, 12],
-              [13, 14, 15, 1]]
+              [9, 10, 0, 12],
+              [13, 14, 15, 11]]
 
 
 def check_valid(matrix):
@@ -31,19 +32,6 @@ class Node:
         self.left = left
         self.right = right
         self.visited = False
-
-    def __add__(self, node):
-        if self.data > node.data:
-            self.left = node
-        else:
-            self.right = node
-
-
-def DFS(node, visited_list):
-    if node:
-        visited_list.append(node.data)
-        DFS(node.left, visited_list)
-        DFS(node.right, visited_list)
 
 
 graph = {3: [2, 6],
@@ -86,7 +74,27 @@ def hamming_dist(matrix, model_matrix):
     return diff_counter
 
 
+def search_by_value(matrix, value):
+    rows = len(matrix)
+    columns = len(matrix[0])
+    for i in range(0, rows):
+        for j in range(0, columns):
+            if matrix[i][j] == value:
+                return [i, j]
+
+
+def manhattan_dist(matrix, model_matrix):
+    rows = len(matrix)
+    columns = len(matrix[0])
+    for i in range(0, rows):
+        for j in range(0, columns):
+            if matrix[i][j] != model_matrix[i][j]:
+                index_correct = search_by_value(model_matrix, matrix[i][j])
+                return math.sqrt((j - index_correct[0]) ** 2 + (i - index_correct[1]) ** 2)
+
+
 print(hamming_dist(matrix_4x4, model_matrix_4x4))
+print(manhattan_dist(matrix_4x4, model_matrix_4x4))
 #                 3
 #       2           |        6
 #           4       |    5       7
