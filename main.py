@@ -34,41 +34,34 @@ class Node:
             self.right = node
 
 
-def DFS(node,root):
-    node.visited = True
-    ancestor = node
-    if node.left is not None and node.left.visited is not True:
-        print('lewo \n')
-        DFS(node.left, root)
-    elif node.right is not None and node.right.visited is not True:
-        print('prawo \n')
-        DFS(node.right, root)
-    else:
-        if node == root:
-            return None
-        else:
-            print('wracam \n')
-            DFS(ancestor, root)
+def DFS(node, visitedList):
+    # node.visited = True
+    if node:
+        visitedList.append(node.data)
+        DFS(node.left, visitedList)
+        DFS(node.right, visitedList)
+    return visitedList
 
 
-print(generate_random_matrix())
+# print(generate_random_matrix())
 
-#przykładowe drzewo dla sprawdzenia poparwności działania algorytmu DFS
+# przykładowe drzewo dla sprawdzenia poparwności działania algorytmu DFS
 #               3
 #      2                    6
 #          4            5       7
 #       1       11    0           13
 #
-#zgodnie z DFS powinno byc
-node1=Node(1)
-node11=Node(11)
-node0=Node(0)
-node13=Node(13)
-node4=Node(4,node1,node11)
-node5=Node(5,node0)
-node7=Node(7,None,node13)
-node2=Node(2,None,node4)
-node6=Node(6,node5,node7)
-node3=Node(3,node2,node4)
+# zgodnie z DFS powinno byc
+node1 = Node(1)
+node11 = Node(11)
+node0 = Node(0)
+node13 = Node(13)
+node4 = Node(4, node1, node11)
+node5 = Node(5, node0)
+node7 = Node(7, None, node13)
+node2 = Node(2, None, node4)
+node6 = Node(6, node5, node7)
+node3 = Node(3, node2, node4)
 
-DFS(node3, node3)
+list = []
+print(DFS(node3, list))
