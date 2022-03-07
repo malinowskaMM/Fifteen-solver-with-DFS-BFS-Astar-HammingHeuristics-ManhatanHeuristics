@@ -1,23 +1,23 @@
 import random
 
-model_matrix = [[1, 2, 3, 4],
-                [5, 6, 7, 8],
-                [9, 10, 11, 12],
-                [13, 14, 15, 0]]
+model_matrix_4x4 = [[1, 2, 3, 4],
+                    [5, 6, 7, 8],
+                    [9, 10, 11, 12],
+                    [13, 14, 15, 0]]
 
 
 def check_valid(matrix):
-    if matrix == model_matrix:
+    if matrix == model_matrix_4x4:
         return True
     else:
         return False
 
-#0 musi być w prawym dolnym rogu
+
 def generate_random_matrix():
     list_of_numbers = [*range(1, 16, 1)]
     print(list_of_numbers)
     random.shuffle(list_of_numbers)
-    matrix = [list_of_numbers[0:4], list_of_numbers[4:8], list_of_numbers[8:12], list_of_numbers[12:16]+[0]]
+    matrix = [list_of_numbers[0:4], list_of_numbers[4:8], list_of_numbers[8:12], list_of_numbers[12:16] + [0]]
     return matrix
 
 
@@ -42,27 +42,43 @@ def DFS(node, visitedList):
         DFS(node.right, visitedList)
 
 
+graph = {3: [2, 6],
+         2: [3, 4],
+         4: [2, 1, 11],
+         11: [4],
+         6: [3, 5, 7],
+         5: [6, 0],
+         0: [5],
+         7: [6, 13],
+         13: [7],
+         1: [4]}
 
-# print(generate_random_matrix())
+#if BFS chooser=1, DFS chooser=0
+def BFSorDFS(graph, root, chooser):
+    visited = []
+    list_od_nodes = []
+    visited.append(root)
+    list_od_nodes.append(root)
+    while list_od_nodes:
+        if chooser == 0:
+            vertex = list_od_nodes.pop(0)
+        elif chooser == 1:
+            vertex = list_od_nodes.pop()
+        print(str(vertex) + " ")
+        for g in graph[vertex]:
+            if g not in visited:
+                visited.append(g)
+                list_od_nodes.append(g)
 
 # przykładowe drzewo dla sprawdzenia poparwności działania algorytmu DFS
-#               3
-#      2                    6
-#          4            5       7
-#       1       11    0           13
+#                 3
+#       2           |        6
+#           4       |    5       7
+#       1       11  |  0           13
 #
-# zgodnie z DFS powinno byc
-node1 = Node(1)
-node11 = Node(11)
-node0 = Node(0)
-node13 = Node(13)
-node4 = Node(4, node1, node11)
-node5 = Node(5, node0)
-node7 = Node(7, None, node13)
-node2 = Node(2, None, node4)
-node6 = Node(6, node5, node7)
-node3 = Node(3, node2, node6)
 
-list = []
-DFS(node3, list)
-print(list)
+#DFS example
+BFSorDFS(graph,3,1)
+print("\n")
+#BFS example
+BFSorDFS(graph,3,0)
