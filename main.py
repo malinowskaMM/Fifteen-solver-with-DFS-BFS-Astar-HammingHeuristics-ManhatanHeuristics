@@ -58,7 +58,7 @@ graph = {3: [2, 6],
          1: [4]}
 
 
-def BFSorDFS(graph, root, chooser):
+def dfs_or_bfs(graph, root, chooser):
     visited = []
     list_od_nodes = []
     visited.append(root)
