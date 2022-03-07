@@ -4,6 +4,10 @@ model_matrix_4x4 = [[1, 2, 3, 4],
                     [5, 6, 7, 8],
                     [9, 10, 11, 12],
                     [13, 14, 15, 0]]
+matrix_4x4 = [[1, 2, 3, 8],
+              [5, 6, 7, 8],
+              [9, 9, 11, 12],
+              [13, 14, 15, 1]]
 
 
 def check_valid(matrix):
@@ -35,11 +39,11 @@ class Node:
             self.right = node
 
 
-def DFS(node, visitedList):
+def DFS(node, visited_list):
     if node:
-        visitedList.append(node.data)
-        DFS(node.left, visitedList)
-        DFS(node.right, visitedList)
+        visited_list.append(node.data)
+        DFS(node.left, visited_list)
+        DFS(node.right, visited_list)
 
 
 graph = {3: [2, 6],
@@ -53,16 +57,16 @@ graph = {3: [2, 6],
          13: [7],
          1: [4]}
 
-#if BFS chooser=1, DFS chooser=0
+
 def BFSorDFS(graph, root, chooser):
     visited = []
     list_od_nodes = []
     visited.append(root)
     list_od_nodes.append(root)
     while list_od_nodes:
-        if chooser == 0:
+        if chooser == 'bfs':
             vertex = list_od_nodes.pop(0)
-        elif chooser == 1:
+        elif chooser == 'dfs':
             vertex = list_od_nodes.pop()
         print(str(vertex) + " ")
         for g in graph[vertex]:
@@ -70,15 +74,25 @@ def BFSorDFS(graph, root, chooser):
                 visited.append(g)
                 list_od_nodes.append(g)
 
-# przykładowe drzewo dla sprawdzenia poparwności działania algorytmu DFS
+
+def hamming_dist(matrix, model_matrix):
+    diff_counter = 0
+    rows = len(matrix)
+    columns = len(matrix[0])
+    for i in range(0, rows):
+        for j in range(0, columns):
+            if matrix[j][i] != model_matrix[j][i]:
+                diff_counter += 1
+    return diff_counter
+
+
+print(hamming_dist(matrix_4x4, model_matrix_4x4))
 #                 3
 #       2           |        6
 #           4       |    5       7
 #       1       11  |  0           13
 #
 
-#DFS example
-BFSorDFS(graph,3,1)
+# BFSorDFS(graph, 3, 'dfs')
 print("\n")
-#BFS example
-BFSorDFS(graph,3,0)
+# BFSorDFS(graph, 3, 'bfs')
