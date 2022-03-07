@@ -12,11 +12,12 @@ def check_valid(matrix):
     else:
         return False
 
-
+#0 musi być w prawym dolnym rogu
 def generate_random_matrix():
-    list_of_numbers = list(range(0, 16))
+    list_of_numbers = [*range(1, 16, 1)]
+    print(list_of_numbers)
     random.shuffle(list_of_numbers)
-    matrix = [list_of_numbers[0:4], list_of_numbers[4:8], list_of_numbers[8:12], list_of_numbers[12:16]]
+    matrix = [list_of_numbers[0:4], list_of_numbers[4:8], list_of_numbers[8:12], list_of_numbers[12:16]+[0]]
     return matrix
 
 
@@ -35,12 +36,11 @@ class Node:
 
 
 def DFS(node, visitedList):
-    # node.visited = True
     if node:
         visitedList.append(node.data)
         DFS(node.left, visitedList)
         DFS(node.right, visitedList)
-    return visitedList
+
 
 
 # print(generate_random_matrix())
@@ -61,7 +61,8 @@ node5 = Node(5, node0)
 node7 = Node(7, None, node13)
 node2 = Node(2, None, node4)
 node6 = Node(6, node5, node7)
-node3 = Node(3, node2, node4)
+node3 = Node(3, node2, node6)
 
 list = []
-print(DFS(node3, list))
+DFS(node3, list)
+print(list)
