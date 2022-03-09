@@ -25,6 +25,77 @@ def generate_random_matrix():
     matrix = [list_of_numbers[0:4], list_of_numbers[4:8], list_of_numbers[8:12], list_of_numbers[12:16] + [0]]
     return matrix
 
+def vertex_count_per_level(depth, leave_count):
+    return pow(leave_count, depth)
+
+def vertex_count(tree_depth, leave_count):
+    result = 0
+    for i in range(tree_depth):
+        result += vertex_count_per_level(i, leave_count)
+    return result
+
+ def generate_tree_2_leafs(tree_depth):
+     leaves_per_vertex_count = 2
+
+     vertex_total = vertex_count(tree_depth, leaves_per_vertex_count)
+     node_list = []
+     vert_data = 1
+
+     for i in range(vertex_total):
+         n = Node(vert_data)
+         node_list.append(n)
+         vert_data += 1
+
+     lower_lvl_counter = 0
+
+     # idziemy po drzewie od dolu
+     for depth_current in range(tree_depth -1, 0, -1):
+         lower_lvl_vert_count = vertex_count_per_level(depth_current, leaves_per_vertex_count)
+         higher_lvl_vert_count = vertex_count_per_level(depth_current - 1, leaves_per_vertex_count)
+
+         lower_lvl_first_node = vertex_total - lower_lvl_vert_count - lower_lvl_counter
+         higher_lvl_first_node = lower_lvl_first_node - higher_lvl_vert_count
+         lower_lvl_counter += lower_lvl_vert_count
+
+         for vert in range(higher_lvl_vert_count):
+             # tutaj przy 4 galeziach bedzie do zmiany .left .right
+             node_list[higher_lvl_first_node + vert].left = node_list[lower_lvl_first_node]
+             node_list[higher_lvl_first_node + vert].right = node_list[lower_lvl_first_node + 1]
+             lower_lvl_first_node += leaves_per_vertex_count
+     return node_list
+
+#zeby to dzialalo, Node musi miec self.left, self.right, self.up, self.down
+#def generate_tree_4_leafs(tree_depth):
+#    leaves_per_vertex_count = 4
+#
+#    vertex_total = vertex_count(tree_depth, leaves_per_vertex_count)
+#    node_list = []
+#    vert_data = 1
+#
+#    for i in range(vertex_total):
+#        n = Node(vert_data)
+#        node_list.append(n)
+#        vert_data += 1
+#
+#    lower_lvl_counter = 0
+#
+#    # idziemy po drzewie od dolu
+#    for depth_current in range(tree_depth -1, 0, -1):
+#        lower_lvl_vert_count = vertex_count_per_level(depth_current, leaves_per_vertex_count)
+#        higher_lvl_vert_count = vertex_count_per_level(depth_current - 1, leaves_per_vertex_count)
+#
+#        lower_lvl_first_node = vertex_total - lower_lvl_vert_count - lower_lvl_counter
+#        higher_lvl_first_node = lower_lvl_first_node - higher_lvl_vert_count
+#        lower_lvl_counter += lower_lvl_vert_count
+#
+#        for vert in range(higher_lvl_vert_count):
+#            # tutaj przy 4 galeziach bedzie do zmiany .left .right
+#            node_list[higher_lvl_first_node + vert].left = node_list[lower_lvl_first_node]
+#            node_list[higher_lvl_first_node + vert].right = node_list[lower_lvl_first_node + 1]
+#            node_list[higher_lvl_first_node + vert].up = node_list[lower_lvl_first_node + 2]
+#            node_list[higher_lvl_first_node + vert].down = node_list[lower_lvl_first_node + 3]
+#            lower_lvl_first_node += leaves_per_vertex_count
+#    return node_list
 
 class Node:
     def __init__(self, data=None, left=None, right=None):
