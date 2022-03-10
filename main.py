@@ -66,28 +66,25 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos][xPos-1]
             tempBoard[yPos][xPos-1] = '0'
             print(tempBoard)
-            self.childLeft = self.makeChild(tempBoard, move)
-            return self.childLeft
-        if move == 'R' :
-            if xPos == 3 | (self.birthMove == 'L'):
-                return None        # Ending branch on right
+            self.childLeft = self.makeChild(tempBoard, move, 'L')
+        if move == 'R':
+            if xPos == 3:
+                return 0        # Ending branch on right
             BLANK['col'] += 1
             tempBoard = self.board
             tempBoard[yPos][xPos] = tempBoard[yPos][xPos+1]
             tempBoard[yPos][xPos+1] = '0'
             print(tempBoard)
-            self.childRight = self.makeChild(tempBoard, move)
-            return self.childRight
-        if move == 'U' :
-            if yPos == 3 | (self.birthMove == 'D'):
-                return None        # Ending branch up
+            self.childRight = self.makeChild(tempBoard, move, 'R')
+        if move == 'U':
+            if yPos == 3:
+                return 0        # Ending branch up
             BLANK['row'] -= 1
             tempBoard = self.board
             tempBoard[yPos][xPos] = tempBoard[yPos-1][xPos]
             tempBoard[yPos-1][xPos] = '0'
             print(tempBoard)
-            self.childUp = self.makeChild(tempBoard, move)
-            return self.childUp
+            self.childUp = self.makeChild(tempBoard, move, 'U')
         if move == 'D':
             if yPos == 0 | (self.birthMove == 'U'):
                 return None        # Ending branch down
@@ -101,14 +98,16 @@ class Node:
 
 def DFS(node, counter):
     # node.visited = True
-    if node is not None:
-        if not node.isBoardCorrect:
-            if counter < 20:
-                counter += 1
-                DFS(node.move('L'), counter)
-                DFS(node.move('R'), counter)
-                DFS(node.move('U'), counter)
-                DFS(node.move('D'), counter)
+    if not node.isBoardCorrect:
+        DFS(node.childLeft)
+        DFS(node.childRight)
+        DFS(node.childUp)
+        DFS(node.childDown)
+
+
+# counter = 0
+# def createTree(root):
+#     while counter < MAXDEPTH:
 
 
 
