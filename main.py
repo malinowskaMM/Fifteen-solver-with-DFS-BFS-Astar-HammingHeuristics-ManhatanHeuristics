@@ -43,32 +43,32 @@ class Node:
         xPos=BLANK['col']
         if move == 'L':
             BLANK['col'] -= 1
-            temp = self.board
-            temp[yPos][xPos] = temp[yPos][xPos-1]
-            temp[yPos][xPos-1] = '0'
-            print(temp)
-            self.makeChild(temp, move)
+            tempBoard = self.board
+            tempBoard[yPos][xPos] = tempBoard[yPos][xPos-1]
+            tempBoard[yPos][xPos-1] = '0'
+            print(tempBoard)
+            self.makeChild(tempBoard, move)
         if move == 'P':
             BLANK['col'] += 1
-            temp = self.board
-            temp[yPos][xPos] = temp[yPos][xPos+1]
-            temp[yPos][xPos+1] = '0'
-            print(temp)
-            self.makeChild(temp, move)
+            tempBoard = self.board
+            tempBoard[yPos][xPos] = tempBoard[yPos][xPos+1]
+            tempBoard[yPos][xPos+1] = '0'
+            print(tempBoard)
+            self.makeChild(tempBoard, move)
         if move == 'U':
             BLANK['row'] -= 1
-            temp = self.board
-            temp[yPos][xPos] = temp[yPos-1][xPos]
-            temp[yPos-1][xPos] = '0'
-            print(temp)
-            self.makeChild(temp, move)
+            tempBoard = self.board
+            tempBoard[yPos][xPos] = tempBoard[yPos-1][xPos]
+            tempBoard[yPos-1][xPos] = '0'
+            print(tempBoard)
+            self.makeChild(tempBoard, move)
         if move == 'D':
             BLANK['row'] += 1
-            temp = self.board
-            temp[yPos][xPos] = temp[yPos+1][xPos]
-            temp[yPos+1][xPos] = '0'
-            print(temp)
-            self.makeChild(temp, move)
+            tempBoard = self.board
+            tempBoard[yPos][xPos] = tempBoard[yPos+1][xPos]
+            tempBoard[yPos+1][xPos] = '0'
+            print(tempBoard)
+            self.makeChild(tempBoard, move)
 
 
 
