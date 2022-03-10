@@ -39,7 +39,7 @@ def createTree(root):
 class Node:
     def __init__(self, board, parent, birthMove):
         self.board = board
-        self.isBoardCorrect = check(self.board, STARTBOARD)
+        self.isBoardCorrect = check(self.board, SOLVEDBOARD)
         # self.children = []
         self.childLeft = None
         self.childRight = None
@@ -65,7 +65,8 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos][xPos-1]
             tempBoard[yPos][xPos-1] = '0'
             print(tempBoard)
-            self.childLeft = self.makeChild(tempBoard, move, 'L')
+            self.childLeft = self.makeChild(tempBoard, move)
+            return self.childLeft
         if move == 'R':
             if xPos == 3:
                 return 0        # Ending branch on right
@@ -74,7 +75,8 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos][xPos+1]
             tempBoard[yPos][xPos+1] = '0'
             print(tempBoard)
-            self.childRight = self.makeChild(tempBoard, move, 'R')
+            self.childRight = self.makeChild(tempBoard, move)
+            return self.childRight
         if move == 'U':
             if yPos == 3:
                 return 0        # Ending branch up
@@ -83,7 +85,8 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos-1][xPos]
             tempBoard[yPos-1][xPos] = '0'
             print(tempBoard)
-            self.childUp = self.makeChild(tempBoard, move, 'U')
+            self.childUp = self.makeChild(tempBoard, move)
+            return self.childDown
         if move == 'D':
             if yPos == 0:
                 return 0        # Ending branch down
@@ -92,16 +95,18 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos+1][xPos]
             tempBoard[yPos+1][xPos] = '0'
             print(tempBoard)
-            self.childDown = self.makeChild(tempBoard, move, 'D')
+            self.childDown = self.makeChild(tempBoard, move)
+            return self.childDown
 
 
 def DFS(node):
     # node.visited = True
-    if not node.isBoardCorrect:
-        DFS(node.childLeft)
-        DFS(node.childRight)
-        DFS(node.childUp)
-        DFS(node.childDown)
+    if node != 0:
+        if not node.isBoardCorrect:
+            DFS(node.move('L'))
+            DFS(node.move('R'))
+            DFS(node.move('U'))
+            DFS(node.move('D'))
 
 
 # counter = 0
