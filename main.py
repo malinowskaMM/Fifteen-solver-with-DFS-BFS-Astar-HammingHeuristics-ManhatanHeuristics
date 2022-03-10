@@ -45,10 +45,30 @@ class Node:
             BLANK['col'] -= 1
             temp = self.board
             temp[yPos][xPos] = temp[yPos][xPos-1]
-            temp[yPos][xPos-1]='0'
+            temp[yPos][xPos-1] = '0'
             print(temp)
             self.makeChild(temp, move)
-
+        if move == 'P':
+            BLANK['col'] += 1
+            temp = self.board
+            temp[yPos][xPos] = temp[yPos][xPos+1]
+            temp[yPos][xPos+1] = '0'
+            print(temp)
+            self.makeChild(temp, move)
+        if move == 'U':
+            BLANK['row'] -= 1
+            temp = self.board
+            temp[yPos][xPos] = temp[yPos-1][xPos]
+            temp[yPos-1][xPos] = '0'
+            print(temp)
+            self.makeChild(temp, move)
+        if move == 'D':
+            BLANK['row'] += 1
+            temp = self.board
+            temp[yPos][xPos] = temp[yPos+1][xPos]
+            temp[yPos+1][xPos] = '0'
+            print(temp)
+            self.makeChild(temp, move)
 
 
 
@@ -58,3 +78,6 @@ if __name__ == '__main__':
     findField(STARTBOARD)
     root = Node(STARTBOARD,None)
     root.move('L')
+    root.move('P')
+    root.move('U')
+    root.move('D')
