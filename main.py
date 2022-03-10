@@ -27,22 +27,36 @@ def findField(board):
 def check(board, solvedBoard):
     if board == solvedBoard:
         return True
+    else:
+        return False
+
+counter = 0
+def createTree(root):
+    while counter < 20:
+        root.move('L')
 
 
 class Node:
-    def __init__(self, board, parent):
+    def __init__(self, board, parent, birthMove):
         self.board = board
-        self.children = []
+        self.isBoardCorrect = check(self.board, STARTBOARD)
+        # self.children = []
+        self.childLeft = None
+        self.childRight = None
+        self.childUp = None
+        self.childDown = None
         if parent is not None:  # None is reserved for ROOT node
             self.parent = parent
+            self.birthMove = birthMove
 
     def makeChild(self, board, move):
-        child = Node(board, self)
-        self.children.append(child)
+        child = Node(board, self, move)
+        return child
+        # self.children.append(child)
 
     def move(self, move):
-        yPos=BLANK['row']
-        xPos=BLANK['col']
+        yPos = BLANK['row']
+        xPos = BLANK['col']
         if move == 'L':
             if xPos == 0:
                 return 0        # Ending branch on left
@@ -51,7 +65,7 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos][xPos-1]
             tempBoard[yPos][xPos-1] = '0'
             print(tempBoard)
-            self.makeChild(tempBoard, move)
+            self.childLeft = self.makeChild(tempBoard, move, 'L')
         if move == 'R':
             if xPos == 3:
                 return 0        # Ending branch on right
@@ -60,7 +74,7 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos][xPos+1]
             tempBoard[yPos][xPos+1] = '0'
             print(tempBoard)
-            self.makeChild(tempBoard, move)
+            self.childRight = self.makeChild(tempBoard, move, 'R')
         if move == 'U':
             if yPos == 3:
                 return 0        # Ending branch up
@@ -69,7 +83,7 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos-1][xPos]
             tempBoard[yPos-1][xPos] = '0'
             print(tempBoard)
-            self.makeChild(tempBoard, move)
+            self.childUp = self.makeChild(tempBoard, move, 'U')
         if move == 'D':
             if yPos == 0:
                 return 0        # Ending branch down
@@ -78,7 +92,22 @@ class Node:
             tempBoard[yPos][xPos] = tempBoard[yPos+1][xPos]
             tempBoard[yPos+1][xPos] = '0'
             print(tempBoard)
-            self.makeChild(tempBoard, move)
+            self.childDown = self.makeChild(tempBoard, move, 'D')
+
+
+def DFS(node):
+    # node.visited = True
+    if not node.isBoardCorrect:
+        DFS(node.childLeft)
+        DFS(node.childRight)
+        DFS(node.childUp)
+        DFS(node.childDown)
+
+
+# counter = 0
+# def createTree(root):
+#     while counter < MAXDEPTH:
+
 
 
 def dfs():
@@ -99,8 +128,9 @@ def dfs():
 if __name__ == '__main__':
     readFromFileToBoard()
     findField(STARTBOARD)
-    root = Node(STARTBOARD,None)
-    root.move('L')
-    root.move('R')
-    root.move('U')
-    root.move('D')
+    root = Node(STARTBOARD, None, None)
+    DFS(root)
+    # root.move('L')
+    # root.move('R')
+    # root.move('U')
+    # root.move('D')
