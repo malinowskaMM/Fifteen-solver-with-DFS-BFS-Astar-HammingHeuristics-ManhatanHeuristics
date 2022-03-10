@@ -87,6 +87,7 @@ class Node:
             print(tempBoard)
             self.childUp = self.makeChild(tempBoard, move)
             return self.childDown
+
         if move == 'D':
             if yPos == 0:
                 return 0        # Ending branch down
