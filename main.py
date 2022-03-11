@@ -54,7 +54,6 @@ class Node:
     def makeChild(self, board, move):
         child = Node(board, self, move)
         return child
-        # self.children.append(child)
 
     def move(self, move):
         yPos = BLANK['row']
@@ -103,16 +102,16 @@ class Node:
 
 def DFS(node, counter):
     # node.visited = True
-    counter += 1
     if node is not None:
         if not node.isBoardCorrect:
             if counter < 20:
-                DFS(node.move('L'), counter)
-                DFS(node.move('R'), counter)
-                DFS(node.move('U'), counter)
-                DFS(node.move('D'), counter)
+                DFS(node.move('L'), counter+1)
+                DFS(node.move('U'), counter+1)
+                DFS(node.move('D'), counter+1)
+                DFS(node.move('R'), counter+1)
             else:
                 return 0
+
 
 
 if __name__ == '__main__':
@@ -120,7 +119,7 @@ if __name__ == '__main__':
     findField(STARTBOARD)
     root = Node(STARTBOARD, None, None)
     root.move('L')
-    # DFS(root, 0)
+    DFS(root, 0)
 
     # root.move('L')
     # root.move('R')
