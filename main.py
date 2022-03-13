@@ -78,7 +78,7 @@ class Node:
             self.rightChild = self.makeChild(tempBoard, move)
             self.rightChild.way.append(move)
         if move == 'U':
-            if y == 0 or (self.birthMove == 'U'):
+            if y == 0 or (self.birthMove == 'D'):
                 return None  # Ending branch up
             BLANK['row'] = BLANK['row'] - 1
             tempBoard = copy.deepcopy(self.board)
@@ -87,7 +87,7 @@ class Node:
             self.upChild = self.makeChild(tempBoard, move)
             self.upChild.way.append(move)
         if move == 'D':
-            if y == 3 or (self.birthMove == 'D'):
+            if y == 3 or (self.birthMove == 'U'):
                 return None  # Ending branch down
             BLANK['row'] = BLANK['row'] + 1
             tempBoard = copy.deepcopy(self.board)
@@ -106,10 +106,14 @@ def DFS(node, counter=0):
             listOfNodes.append(node)
             discoveredSolutionFlag = node.isBoardCorrect
             while listOfNodes and discoveredSolutionFlag is False:
-                vertex = listOfNodes.pop(0)
+                vertex = listOfNodes.pop()
                 for o in ORDER:
                     vertex.move(o)
                 for child in vertex.children:
+                    if child.isBoardCorrect is True:
+                        print("Wynik:")
+                        print(child.board)
+                        return child.board
                     if child not in visited:
                         visited.append(child)
                         listOfNodes.append(child)
@@ -123,14 +127,19 @@ def BFS(node, counter=0):
         listOfNodes.append(node)
         discoveredSolutionFlag = node.isBoardCorrect
         while listOfNodes and discoveredSolutionFlag is False:
-            vertex = listOfNodes.pop()
+            vertex = listOfNodes.pop(0)
             discoveredSolutionFlag = vertex.isBoardCorrect
             for o in ORDER:
-                node.move(o)
+                vertex.move(o)
             for child in vertex.children:
+                if child.isBoardCorrect is True:
+                    print("Wynik:")
+                    print(child.board)
+                    return child.board
                 if child not in visited:
                     visited.append(child)
                     listOfNodes.append(child)
+
 
 
 
@@ -139,5 +148,5 @@ if __name__ == '__main__':
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
-    DFS(root)
+    print(BFS(root))
 
