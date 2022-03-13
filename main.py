@@ -1,4 +1,5 @@
 import copy
+import math
 from random import random
 
 STARTBOARD = []
@@ -64,7 +65,7 @@ class Node:
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y][x - 1] = tempBoard[y][x - 1], tempBoard[y][x]
             print(tempBoard)
-            left = self.makeChild(tempBoard,move)
+            left = self.makeChild(tempBoard, move)
             self.leftChild = left
         if move == 'R':
             if x == 3 or (self.birthMove == 'L'):
@@ -137,6 +138,40 @@ def BFS(node, counter=0):
                     listOfNodes.append(child)
 
 
+def searchByValue(matrix, value):
+    rows = len(matrix)
+    columns = len(matrix[0])
+    for i in range(0, rows):
+        for j in range(0, columns):
+            if matrix[i][j] == value:
+                return [i, j]
+
+
+def manhattanDist(matrix, modelMatrix):
+    distance = 0
+    rows = len(matrix)
+    columns = len(matrix[0])
+    for i in range(0, rows):
+        for j in range(0, columns):
+            if matrix[i][j] != modelMatrix[i][j]:
+                indexCorrect = searchByValue(modelMatrix, matrix[i][j])
+                distance += abs(j - indexCorrect[0]) + abs(i - indexCorrect[1])
+    return distance
+
+
+def hammingDist(matrix, modelMatrix):
+    diffCounter = 0
+    rows = len(matrix)
+    columns = len(matrix[0])
+    for i in range(0, rows):
+        for j in range(0, columns):
+            if matrix[j][i] != modelMatrix[j][i]:
+                diffCounter += 1
+    return diffCounter
+
+
+def ASTAR(heuristic):
+    return 0;
 
 
 if __name__ == '__main__':
@@ -145,4 +180,3 @@ if __name__ == '__main__':
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
     print(BFS(root))
-
