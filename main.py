@@ -1,3 +1,6 @@
+import copy
+from random import random
+
 STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 BLANK = {}
@@ -15,7 +18,7 @@ def readFromFileToBoard():
     print(STARTBOARD)
 
 
-def findField(board):
+def findZero(board):
     for col in range(0, len(board)):
         for row in range(0, len(board[col])):
             if board[row][col] == '0':
@@ -31,97 +34,91 @@ def check(board, solvedBoard):
         return False
 
 
-# counter = 0
-# def createTree(root):
-#     while counter < 20:
-#         root.move('L')
-
-
 class Node:
-    def __init__(self, board, parent, birthMove):
+    def __init__(self, board, parent=None, birthMove=None):
         self.board = board
         self.isBoardCorrect = check(self.board, SOLVEDBOARD)
-        # self.children = []
-        self.childLeft = None
-        self.childRight = None
-        self.childUp = None
-        self.childDown = None
-        self.birthMove = None
-        if parent is not None:  # None is reserved for ROOT node
-            self.parent = parent
-            self.birthMove = birthMove
+        self.parent = parent
+        self.birthMove = birthMove
+        self.leftChild = None
+        self.rightChild = None
+        self.upChild = None
+        self.downChild = None
+        self.children = []
+        self.vistied = False
+        self.way=[]
 
-    def makeChild(self, board, move):
-        child = Node(board, self, move)
+    def makeChild(self, board, birthMove):
+        child = Node(board, self, birthMove)
+        self.children.append(child)
         return child
 
     def move(self, move):
-        yPos = BLANK['row']
-        xPos = BLANK['col']
+        findZero(self.board)
+        y = BLANK['row']
+        x = BLANK['col']
         if move == 'L':
-            if xPos == 0 | (self.birthMove == 'R'):
-                return None  # Ending branch on left
-            BLANK['col'] -= 1
-            tempBoard = self.board
-            tempBoard[yPos][xPos] = tempBoard[yPos][xPos - 1]
-            tempBoard[yPos][xPos - 1] = '0'
+            if x == 0 or (self.birthMove == 'R'):
+                return None
+            BLANK['col'] = BLANK['col'] - 1
+            tempBoard = copy.deepcopy(self.board)
+            tempBoard[y][x], tempBoard[y][x - 1] = tempBoard[y][x - 1], tempBoard[y][x]
             print(tempBoard)
-            self.childLeft = self.makeChild(tempBoard, move)
-            return self.childLeft
+            left = self.makeChild(tempBoard,move)
+            self.leftChild = left
+            self.leftChild.way.append(move)
         if move == 'R':
-            if xPos == 3 | (self.birthMove == 'L'):
-                return None  # Ending branch on right
-            BLANK['col'] += 1
-            tempBoard = self.board
-            tempBoard[yPos][xPos] = tempBoard[yPos][xPos + 1]
-            tempBoard[yPos][xPos + 1] = '0'
+            if x == 3 or (self.birthMove == 'L'):
+                return None
+            BLANK['col'] = BLANK['col'] + 1
+            tempBoard = copy.deepcopy(self.board)
+            tempBoard[y][x], tempBoard[y][x + 1] = tempBoard[y][x + 1], tempBoard[y][x]
             print(tempBoard)
-            self.childRight = self.makeChild(tempBoard, move)
-            return self.childRight
+            self.rightChild = self.makeChild(tempBoard, move)
+            self.rightChild.way.append(move)
         if move == 'D':
-            if yPos == 0 | (self.birthMove == 'U'):
+            if y == 0 or (self.birthMove == 'U'):
                 return None  # Ending branch up
-            BLANK['row'] -= 1
-            tempBoard = self.board
-            tempBoard[yPos][xPos] = tempBoard[yPos - 1][xPos]
-            tempBoard[yPos - 1][xPos] = '0'
+            BLANK['row'] = BLANK['row'] - 1
+            tempBoard = copy.deepcopy(self.board)
+            tempBoard[y][x], tempBoard[y - 1][x] = tempBoard[y - 1][x], tempBoard[y][x]
             print(tempBoard)
-            self.childUp = self.makeChild(tempBoard, move)
-            return self.childUp
+            self.upChild = self.makeChild(tempBoard, move)
+            self.upChild.way.append(move)
         if move == 'U':
-            if yPos == 3 | (self.birthMove == 'D'):
+            if y == 3 or (self.birthMove == 'D'):
                 return None  # Ending branch down
-            BLANK['row'] += 1
-            tempBoard = self.board
-            tempBoard[yPos][xPos] = tempBoard[yPos + 1][xPos]
-            tempBoard[yPos + 1][xPos] = '0'
+            BLANK['row'] = BLANK['row'] + 1
+            tempBoard = copy.deepcopy(self.board)
+            tempBoard[y][x], tempBoard[y + 1][x] = tempBoard[y + 1][x], tempBoard[y][x]
             print(tempBoard)
-            self.childDown = self.makeChild(tempBoard, move)
-            return self.childDown
+            self.downChild = self.makeChild(tempBoard, move)
+            self.downChild.way.append(move)
 
 
-def DFS(node, counter):
-    # node.visited = True
+def DFS(node, counter=0):
     if node is not None:
-        if not node.isBoardCorrect:
-            if counter < 20:
-                DFS(node.move('L'), counter+1)
-                DFS(node.move('U'), counter+1)
-                DFS(node.move('D'), counter+1)
-                DFS(node.move('R'), counter+1)
-            else:
-                return 0
+        if node.isBoardCorrect is False:
+            node.vistied = True
+            node.move('L')
+            node.move('U')
+            node.move('D')
+            node.move('R')
+            counter += 1
+            for child in node.children:
+                if not child.vistied:
+                    DFS(child, counter)
+        print("TUTAJ")
+
 
 
 
 if __name__ == '__main__':
     readFromFileToBoard()
-    findField(STARTBOARD)
-    root = Node(STARTBOARD, None, None)
+    findZero(STARTBOARD)
+    root = Node(STARTBOARD)
     root.move('L')
-    DFS(root, 0)
-
-    # root.move('L')
-    # root.move('R')
-    # root.move('U')
-    # root.move('D')
+    root.move('U')
+    root.move('D')
+    root.move('R')
+    #DFS(root)
