@@ -76,7 +76,7 @@ class Node:
             print(tempBoard)
             self.rightChild = self.makeChild(tempBoard, move)
             self.rightChild.way.append(move)
-        if move == 'D':
+        if move == 'U':
             if y == 0 or (self.birthMove == 'U'):
                 return None  # Ending branch up
             BLANK['row'] = BLANK['row'] - 1
@@ -85,7 +85,7 @@ class Node:
             print(tempBoard)
             self.upChild = self.makeChild(tempBoard, move)
             self.upChild.way.append(move)
-        if move == 'U':
+        if move == 'D':
             if y == 3 or (self.birthMove == 'D'):
                 return None  # Ending branch down
             BLANK['row'] = BLANK['row'] + 1
