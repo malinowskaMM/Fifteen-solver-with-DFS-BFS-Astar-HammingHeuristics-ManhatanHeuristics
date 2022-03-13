@@ -4,6 +4,7 @@ from random import random
 STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 BLANK = {}
+ORDER = []
 MAXDEPTH = 20
 
 
@@ -99,17 +100,34 @@ class Node:
 def DFS(node, counter=0):
     if node is not None:
         if node.isBoardCorrect is False:
-            node.vistied = True
-            node.move('L')
-            node.move('U')
-            node.move('D')
-            node.move('R')
-            counter += 1
-            for child in node.children:
-                if not child.vistied:
-                    DFS(child, counter)
-        print("TUTAJ")
+            visited = []
+            listOfNodes = []
+            visited.append(node)
+            listOfNodes.append(node)
+            while listOfNodes:
+                vertex = listOfNodes.pop(0)
+                for o in ORDER:
+                    node.move(o)
+                for child in vertex.children:
+                    if child not in visited:
+                        visited.append(child)
+                        listOfNodes.append(child)
 
+def BFS(node, counter=0):
+    if node is not None:
+        if node.isBoardCorrect is False:
+            visited = []
+            listOfNodes = []
+            visited.append(node)
+            listOfNodes.append(node)
+            while listOfNodes:
+                vertex = listOfNodes.pop()
+                for o in ORDER:
+                    node.move(o)
+                for child in vertex.children:
+                    if child not in visited:
+                        visited.append(child)
+                        listOfNodes.append(child)
 
 
 
@@ -117,8 +135,5 @@ if __name__ == '__main__':
     readFromFileToBoard()
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
-    root.move('L')
-    root.move('U')
-    root.move('D')
-    root.move('R')
-    #DFS(root)
+    ORDER = ['L', 'R', 'D', 'U']
+    DFS(root)
