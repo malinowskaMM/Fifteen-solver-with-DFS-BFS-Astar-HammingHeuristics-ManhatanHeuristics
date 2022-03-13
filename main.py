@@ -47,7 +47,6 @@ class Node:
         self.downChild = None
         self.children = []
         self.vistied = False
-        self.way=[]
 
     def makeChild(self, board, birthMove):
         child = Node(board, self, birthMove)
@@ -67,7 +66,6 @@ class Node:
             print(tempBoard)
             left = self.makeChild(tempBoard,move)
             self.leftChild = left
-            self.leftChild.way.append(move)
         if move == 'R':
             if x == 3 or (self.birthMove == 'L'):
                 return None
@@ -76,7 +74,6 @@ class Node:
             tempBoard[y][x], tempBoard[y][x + 1] = tempBoard[y][x + 1], tempBoard[y][x]
             print(tempBoard)
             self.rightChild = self.makeChild(tempBoard, move)
-            self.rightChild.way.append(move)
         if move == 'U':
             if y == 0 or (self.birthMove == 'D'):
                 return None  # Ending branch up
@@ -85,7 +82,6 @@ class Node:
             tempBoard[y][x], tempBoard[y - 1][x] = tempBoard[y - 1][x], tempBoard[y][x]
             print(tempBoard)
             self.upChild = self.makeChild(tempBoard, move)
-            self.upChild.way.append(move)
         if move == 'D':
             if y == 3 or (self.birthMove == 'U'):
                 return None  # Ending branch down
@@ -94,7 +90,6 @@ class Node:
             tempBoard[y][x], tempBoard[y + 1][x] = tempBoard[y + 1][x], tempBoard[y][x]
             print(tempBoard)
             self.downChild = self.makeChild(tempBoard, move)
-            self.downChild.way.append(move)
 
 
 def DFS(node, counter=0):
@@ -135,6 +130,7 @@ def BFS(node, counter=0):
                 if child.isBoardCorrect is True:
                     print("Wynik:")
                     print(child.board)
+                    print(child.way)
                     return child.board
                 if child not in visited:
                     visited.append(child)
