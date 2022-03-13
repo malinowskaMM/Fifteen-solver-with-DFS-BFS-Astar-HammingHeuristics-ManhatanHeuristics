@@ -104,30 +104,33 @@ def DFS(node, counter=0):
             listOfNodes = []
             visited.append(node)
             listOfNodes.append(node)
-            while listOfNodes:
+            discoveredSolutionFlag = node.isBoardCorrect
+            while listOfNodes and discoveredSolutionFlag is False:
                 vertex = listOfNodes.pop(0)
                 for o in ORDER:
-                    node.move(o)
+                    vertex.move(o)
                 for child in vertex.children:
                     if child not in visited:
                         visited.append(child)
                         listOfNodes.append(child)
 
+
 def BFS(node, counter=0):
     if node is not None:
-        if node.isBoardCorrect is False:
-            visited = []
-            listOfNodes = []
-            visited.append(node)
-            listOfNodes.append(node)
-            while listOfNodes:
-                vertex = listOfNodes.pop()
-                for o in ORDER:
-                    node.move(o)
-                for child in vertex.children:
-                    if child not in visited:
-                        visited.append(child)
-                        listOfNodes.append(child)
+        visited = []
+        listOfNodes = []
+        visited.append(node)
+        listOfNodes.append(node)
+        discoveredSolutionFlag = node.isBoardCorrect
+        while listOfNodes and discoveredSolutionFlag is False:
+            vertex = listOfNodes.pop()
+            discoveredSolutionFlag = vertex.isBoardCorrect
+            for o in ORDER:
+                node.move(o)
+            for child in vertex.children:
+                if child not in visited:
+                    visited.append(child)
+                    listOfNodes.append(child)
 
 
 
@@ -137,3 +140,4 @@ if __name__ == '__main__':
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
     DFS(root)
+
