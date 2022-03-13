@@ -1,5 +1,6 @@
 import copy
 import math
+import sys
 from random import random
 
 STARTBOARD = []
@@ -170,7 +171,21 @@ def hammingDist(matrix, modelMatrix):
     return diffCounter
 
 
-def ASTAR(heuristic):
+def ASTAR(node, heuristic):
+    discoveredSolutionFlag = node.isBoardCorrect
+    while discoveredSolutionFlag is False:
+        minCost = sys.maxsize
+        for o in ORDER:
+            vertex = node.move(o)
+            if heuristic == 'manhattan':
+                cost = manhattanDist(vertex.board, SOLVEDBOARD)
+                if cost < minCost:
+                    minCost = cost
+            if heuristic == 'manhattan':
+                cost = hammingDist(vertex.board, SOLVEDBOARD)
+                if cost < minCost:
+                    minCost = cost
+
     return 0;
 
 
