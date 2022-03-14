@@ -60,8 +60,6 @@ class Node:
         y = BLANK['row']
         x = BLANK['col']
         if move == 'L':
-            if x == 0 or (self.birthMove == 'R'):
-                return None
             BLANK['col'] = BLANK['col'] - 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y][x - 1] = tempBoard[y][x - 1], tempBoard[y][x]
@@ -69,30 +67,52 @@ class Node:
             left = self.makeChild(tempBoard, move)
             self.leftChild = left
         if move == 'R':
-            if x == 3 or (self.birthMove == 'L'):
-                return None
             BLANK['col'] = BLANK['col'] + 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y][x + 1] = tempBoard[y][x + 1], tempBoard[y][x]
             print(tempBoard)
             self.rightChild = self.makeChild(tempBoard, move)
         if move == 'U':
-            if y == 0 or (self.birthMove == 'D'):
-                return None  # Ending branch up
             BLANK['row'] = BLANK['row'] - 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y - 1][x] = tempBoard[y - 1][x], tempBoard[y][x]
             print(tempBoard)
             self.upChild = self.makeChild(tempBoard, move)
         if move == 'D':
-            if y == 3 or (self.birthMove == 'U'):
-                return None  # Ending branch down
             BLANK['row'] = BLANK['row'] + 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y + 1][x] = tempBoard[y + 1][x], tempBoard[y][x]
             print(tempBoard)
             self.downChild = self.makeChild(tempBoard, move)
 
+
+    def restrictMovement(self, move):
+        if move == 'L':
+            if x == 0 or (self.birthMove == 'R'):
+                return None
+            move(move)
+        if move == 'R':
+            if x == 3 or (self.birthMove == 'L'):
+                return None
+            move(move)
+        if move == 'U':
+            if y == 0 or (self.birthMove == 'D'):
+                 return None  # Ending branch up
+            move(move)
+        if move == 'D':
+             if y == 3 or (self.birthMove == 'U'):
+                  return None  # Ending branch down
+             move(move)
+
+    def backMove(self):
+        if move == 'L':
+            move('R')
+        if move == 'R':
+            move('L')
+        if move == 'U':
+            move('D')
+        if move == 'D':
+            move('U')
 
 def DFS(node, counter=0):
     if node is not None:
@@ -105,7 +125,7 @@ def DFS(node, counter=0):
             while listOfNodes and discoveredSolutionFlag is False:
                 vertex = listOfNodes.pop()
                 for o in ORDER:
-                    vertex.move(o)
+                    vertex.restrictMovement(o)
                 for child in vertex.children:
                     if child.isBoardCorrect is True:
                         print("Wynik:")
@@ -127,7 +147,7 @@ def BFS(node, counter=0):
             vertex = listOfNodes.pop(0)
             discoveredSolutionFlag = vertex.isBoardCorrect
             for o in ORDER:
-                vertex.move(o)
+                vertex.restrictMovement(o)
             for child in vertex.children:
                 if child.isBoardCorrect is True:
                     print("Wynik:")
