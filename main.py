@@ -63,26 +63,25 @@ class Node:
             BLANK['col'] = BLANK['col'] - 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y][x - 1] = tempBoard[y][x - 1], tempBoard[y][x]
-            print(tempBoard)
-            left = self.makeChild(tempBoard, move)
-            self.leftChild = left
+            # print(tempBoard)
+            self.leftChild = self.makeChild(tempBoard, move)
         if move == 'R':
             BLANK['col'] = BLANK['col'] + 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y][x + 1] = tempBoard[y][x + 1], tempBoard[y][x]
-            print(tempBoard)
+            # print(tempBoard)
             self.rightChild = self.makeChild(tempBoard, move)
         if move == 'U':
             BLANK['row'] = BLANK['row'] - 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y - 1][x] = tempBoard[y - 1][x], tempBoard[y][x]
-            print(tempBoard)
+            # print(tempBoard)
             self.upChild = self.makeChild(tempBoard, move)
         if move == 'D':
             BLANK['row'] = BLANK['row'] + 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y + 1][x] = tempBoard[y + 1][x], tempBoard[y][x]
-            print(tempBoard)
+            # print(tempBoard)
             self.downChild = self.makeChild(tempBoard, move)
 
     def restrictMovement(self, move):
@@ -90,31 +89,41 @@ class Node:
         y = BLANK['row']
         x = BLANK['col']
         if move == 'L':
-            if x == 0 or (self.birthMove == 'R'):
+            if x == 0:
                 return None
             self.move(move)
         if move == 'R':
-            if x == 3 or (self.birthMove == 'L'):
+            if x == 3:
                 return None
             self.move(move)
         if move == 'U':
-            if y == 0 or (self.birthMove == 'D'):
+            if y == 0:
                 return None  # Ending branch up
             self.move(move)
         if move == 'D':
-            if y == 3 or (self.birthMove == 'U'):
+            if y == 3:
                 return None  # Ending branch down
             self.move(move)
 
     def backMove(self):
+        findZero(self.board)
+        y = BLANK['row']
+        x = BLANK['col']
         if self.birthMove == 'L':
-            self.move('R')
+            self.board[y][x], self.board[y][x + 1] = self.board[y][x + 1], self.board[y][x]
         elif self.birthMove == 'R':
-            self.move('L')
+            self.board[y][x], self.board[y][x - 1] = self.board[y][x - 1], self.board[y][x]
         elif self.birthMove == 'U':
-            self.move('D')
+            self.board[y][x], self.board[y + 1][x] = self.board[y + 1][x], self.board[y][x]
         elif self.birthMove == 'D':
-            self.move('U')
+            self.board[y][x], self.board[y - 1][x] = self.board[y - 1][x], self.board[y][x]
+        for c in self.children:
+            del c
+        self.children.clear()
+        self.leftChild = None
+        self.rightChild = None
+        self.upChild = None
+        self.downChild = None
 
 
 def DFS(node, counter=0):
@@ -155,7 +164,6 @@ def BFS(node, counter=0):
                 if child.isBoardCorrect is True:
                     print("Wynik:")
                     print(child.board)
-                    print(child.way)
                     return child.board
                 if child not in visited:
                     visited.append(child)
@@ -194,22 +202,25 @@ def hammingDist(matrix, modelMatrix):
     return diffCounter
 
 
-def ASTAR(node, heuristic):
+def ASTAR(node):
     discoveredSolutionFlag = node.isBoardCorrect
     while discoveredSolutionFlag is False:
         minCost = sys.maxsize
         for o in ORDER:
-            vertex = node.move(o)
-            if heuristic == 'manhattan':
+            node.move(o)
+        for child in node.children:
+            print(child.board)
+            '''if heuristic == 'manhattan':
                 cost = manhattanDist(vertex.board, SOLVEDBOARD)
                 if cost < minCost:
                     minCost = cost
             if heuristic == 'manhattan':
                 cost = hammingDist(vertex.board, SOLVEDBOARD)
                 if cost < minCost:
-                    minCost = cost
-
-    return 0;
+                    minCost = cost'''
+            child.backMove()
+            print(child.board)
+    return 0
 
 
 if __name__ == '__main__':
@@ -217,4 +228,14 @@ if __name__ == '__main__':
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
-    print(DFS(root))
+    # print(DFS(root))
+    # ASTAR(root)
+
+    for o in ORDER:
+        root.move(o)
+
+    for child in root.children:
+        print(child.board)
+        print(child.birthMove)
+        child.backMove()
+        print(child.board)
