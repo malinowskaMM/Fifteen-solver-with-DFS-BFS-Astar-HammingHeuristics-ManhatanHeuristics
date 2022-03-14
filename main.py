@@ -202,25 +202,29 @@ def hammingDist(matrix, modelMatrix):
     return diffCounter
 
 
-def ASTAR(node):
+def ASTAR(node, heuristic):
     discoveredSolutionFlag = node.isBoardCorrect
     while discoveredSolutionFlag is False:
         minCost = sys.maxsize
+        minCostMove = []
         for o in ORDER:
-            node.move(o)
+            node.restrictMovement(o)
         for child in node.children:
             print(child.board)
-            '''if heuristic == 'manhattan':
-                cost = manhattanDist(vertex.board, SOLVEDBOARD)
+            if heuristic == 'manhattan':
+                cost = manhattanDist(child.board, SOLVEDBOARD)
                 if cost < minCost:
                     minCost = cost
-            if heuristic == 'manhattan':
-                cost = hammingDist(vertex.board, SOLVEDBOARD)
+                    minCostMove.clear()
+                    minCostMove.append(child.birthMove)
+            if heuristic == 'hamming':
+                cost = hammingDist(child.board, SOLVEDBOARD)
                 if cost < minCost:
-                    minCost = cost'''
+                    minCost = cost
+                    minCostMove.clear()
+                    minCostMove.append(child.birthMove)
             child.backMove()
-            print(child.board)
-    return 0
+        node.restrictMovement(minCostMove[0])
 
 
 if __name__ == '__main__':
@@ -229,13 +233,4 @@ if __name__ == '__main__':
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
     # print(DFS(root))
-    # ASTAR(root)
-
-    for o in ORDER:
-        root.move(o)
-
-    for child in root.children:
-        print(child.board)
-        print(child.birthMove)
-        child.backMove()
-        print(child.board)
+    ASTAR(root,'hamming')
