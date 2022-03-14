@@ -85,34 +85,37 @@ class Node:
             print(tempBoard)
             self.downChild = self.makeChild(tempBoard, move)
 
-
     def restrictMovement(self, move):
+        findZero(self.board)
+        y = BLANK['row']
+        x = BLANK['col']
         if move == 'L':
             if x == 0 or (self.birthMove == 'R'):
                 return None
-            move(move)
+            self.move(move)
         if move == 'R':
             if x == 3 or (self.birthMove == 'L'):
                 return None
-            move(move)
+            self.move(move)
         if move == 'U':
             if y == 0 or (self.birthMove == 'D'):
-                 return None  # Ending branch up
-            move(move)
+                return None  # Ending branch up
+            self.move(move)
         if move == 'D':
-             if y == 3 or (self.birthMove == 'U'):
-                  return None  # Ending branch down
-             move(move)
+            if y == 3 or (self.birthMove == 'U'):
+                return None  # Ending branch down
+            self.move(move)
 
     def backMove(self):
-        if move == 'L':
-            move('R')
-        if move == 'R':
-            move('L')
-        if move == 'U':
-            move('D')
-        if move == 'D':
-            move('U')
+        if self.birthMove == 'L':
+            self.move('R')
+        elif self.birthMove == 'R':
+            self.move('L')
+        elif self.birthMove == 'U':
+            self.move('D')
+        elif self.birthMove == 'D':
+            self.move('U')
+
 
 def DFS(node, counter=0):
     if node is not None:
@@ -214,4 +217,4 @@ if __name__ == '__main__':
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
-    print(BFS(root))
+    print(DFS(root))
