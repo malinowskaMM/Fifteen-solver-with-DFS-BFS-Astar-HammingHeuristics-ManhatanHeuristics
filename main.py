@@ -7,8 +7,8 @@ STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 BLANK = {}
 ORDER = []
-MAXDEPTH = 20
-
+MAXDEPTH = 5
+DFS_MOVE_COUNTER = 0
 
 def readFromFileToBoard():
     file = open('input.txt', 'r')
@@ -27,7 +27,7 @@ def findZero(board):
             if board[row][col] == '0':
                 BLANK['row'] = row
                 BLANK['col'] = col
-    print(BLANK)
+    # print(BLANK)
 
 
 def check(board, solvedBoard):
@@ -48,7 +48,8 @@ class Node:
         self.upChild = None
         self.downChild = None
         self.children = []
-        self.vistied = False
+        self.visited = False
+        self.depthCounter = 0
 
     def makeChild(self, board, birthMove):
         child = Node(board, self, birthMove)
@@ -56,6 +57,7 @@ class Node:
         return child
 
     def move(self, move):
+        # print(move)
         findZero(self.board)
         y = BLANK['row']
         x = BLANK['col']
@@ -126,29 +128,62 @@ class Node:
         self.downChild = None
 
 
-def DFS(node, counter=0):
-    if node is not None:
-        if node.isBoardCorrect is False:
-            visited = []
-            listOfNodes = []
-            visited.append(node)
-            listOfNodes.append(node)
-            discoveredSolutionFlag = node.isBoardCorrect
-            while listOfNodes and discoveredSolutionFlag is False:
-                vertex = listOfNodes.pop()
-                for o in ORDER:
-                    vertex.restrictMovement(o)
-                for child in vertex.children:
-                    if child.isBoardCorrect is True:
-                        print("Wynik:")
-                        print(child.board)
-                        return child.board
-                    if child not in visited:
-                        visited.append(child)
-                        listOfNodes.append(child)
+# def DFS(node, counter=0):
+#     counter = 0
+#     if node is not None:
+#         if node.isBoardCorrect is False:
+#             visited = []
+#             listOfNodes = []
+#             visited.append(node)
+#             listOfNodes.append(node)
+#             discoveredSolutionFlag = node.isBoardCorrect
+#             while listOfNodes and discoveredSolutionFlag is False:
+#                 vertex = listOfNodes.pop()
+#                 counter += 1
+#                 discoveredSolutionFlag = node.isBoardCorrect
+#                 print("Counter: ", counter)
+#                 for o in ORDER:
+#                     vertex.restrictMovement(o)
+#                 for child in vertex.children:
+#                     if child.isBoardCorrect is True:
+#                         print("Wynik:")
+#                         print(child.board)
+#                         return child.board
+#                     if child not in visited:
+#                         visited.append(child)
+#                         listOfNodes.append(child)
+
+
+def DFS(node, moveCounter, depthCounter=0):
+    if node is None:
+        return
+    if node.visited:
+        return
+
+    node.depthCounter = depthCounter
+    node.visited = True
+    discoveredSolutionFlag = node.isBoardCorrect
+
+    if discoveredSolutionFlag:
+        # print("Wynik:")
+        # print(node.board)
+        return node.board
+
+    if node.depthCounter < MAXDEPTH:
+        # print("Depth: ", node.depthCounter)
+
+        for o in ORDER:
+            node.restrictMovement(o)
+            if node.children:
+                child = node.children[-1]
+                result= DFS(child, node.depthCounter + 1, moveCounter)
+                if result is not None:
+                    print("Zbadana glebokosc drzewa:", node.depthCounter)
+                    return result
 
 
 def BFS(node, counter=0):
+    counter = 0
     if node is not None:
         visited = []
         listOfNodes = []
@@ -157,18 +192,19 @@ def BFS(node, counter=0):
         discoveredSolutionFlag = node.isBoardCorrect
         while listOfNodes and discoveredSolutionFlag is False:
             vertex = listOfNodes.pop(0)
+            counter += 1
             discoveredSolutionFlag = vertex.isBoardCorrect
             for o in ORDER:
                 vertex.restrictMovement(o)
             for child in vertex.children:
                 if child.isBoardCorrect is True:
+                    print("Ilosc odwiedzonych wezlow: ", counter)
                     print("Wynik:")
                     print(child.board)
                     return child.board
                 if child not in visited:
                     visited.append(child)
                     listOfNodes.append(child)
-
 
 def searchByValue(matrix, value):
     rows = len(matrix)
@@ -232,5 +268,7 @@ if __name__ == '__main__':
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
-    # print(DFS(root))
-    ASTAR(root,'hamming')
+    print(DFS(root, 0))
+
+    # print(BFS(root))
+    # ASTAR(root,'hamming')
