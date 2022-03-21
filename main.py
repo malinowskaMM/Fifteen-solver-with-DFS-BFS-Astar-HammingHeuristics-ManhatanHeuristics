@@ -239,14 +239,13 @@ def hammingDist(matrix, modelMatrix):
 
 
 def ASTAR(node, heuristic):
-    discoveredSolutionFlag = node.isBoardCorrect
-    while discoveredSolutionFlag is False:
+    while node.isBoardCorrect is False:
         minCost = sys.maxsize
         minCostMove = []
         for o in ORDER:
             node.restrictMovement(o)
         for child in node.children:
-            print(child.board)
+            #print(child.board)
             if heuristic == 'manhattan':
                 cost = manhattanDist(child.board, SOLVEDBOARD)
                 if cost < minCost:
@@ -260,7 +259,11 @@ def ASTAR(node, heuristic):
                     minCostMove.clear()
                     minCostMove.append(child.birthMove)
             child.backMove()
+        print(minCostMove[0])
         node.restrictMovement(minCostMove[0])
+        for child in node.children:
+            if check(node.board, child.board) is False:
+                node = child
 
 
 if __name__ == '__main__':
@@ -268,7 +271,7 @@ if __name__ == '__main__':
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
-    print(DFS(root, 0))
-
+    #print(DFS(root, 0))
+    #print(BFS(root, 0))
     # print(BFS(root))
-    # ASTAR(root,'hamming')
+    ASTAR(root,'hamming')
