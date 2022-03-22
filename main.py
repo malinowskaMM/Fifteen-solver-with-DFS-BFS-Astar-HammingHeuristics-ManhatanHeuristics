@@ -195,15 +195,10 @@ def dfs(node, moveCounter, depthCounter=0):
             node.restrictMovement(o)
             if node.children:
                 child = node.children[-1]
-                if check(child.board, SOLVEDBOARD):
-                    # print("Wynik:")
-                    # print(node.board)
-                    return child.board
                 result = dfs(child, node.depthCounter + 1, moveCounter)
                 if result is not None:
                     print("Zbadana glebokosc drzewa:", node.depthCounter)
-                else:
-                    return node.board
+                    return result
 
 
 def bfs(node, counter=0):
