@@ -8,7 +8,18 @@ ORDER = []
 MAXDEPTH = 5
 DFS_MOVE_COUNTER = 0
 
-def readFromFileToBoard():
+
+def readFromFileToBoard(fileName):
+    file = open(fileName, 'r')
+    w = file.read(1)  # w - numbers of rows
+    file.seek(2)
+    k = file.read(1)  # k - numbers of columns
+    file.seek(5)  # set postion at the beginning of second line of file
+    for line in file:
+        STARTBOARD.append(line.split())  # every line is a table with char values
+
+
+def readFromInputToBoard():
     file = open('input.txt', 'r')
     w = file.read(1)  # w - numbers of rows
     file.seek(2)
@@ -16,19 +27,16 @@ def readFromFileToBoard():
     file.seek(5)  # set postion at the beginning of second line of file
     for line in file:
         STARTBOARD.append(line.split())  # every line is a table with char values
-    print(STARTBOARD)
 
-def writeBoardToFile(board):
-    file = open('output.txt', 'w')
+
+def writeBoardToFile(fileName, board):
+    file = open(fileName, 'w')
     for col in range(0, len(board)):
         line = ""
         for row in range(0, len(board[col])):
             line += board[col][row] + " "
         file.write(line)
         file.write("\n")
-
-
-
 
 
 def findZero(board):
@@ -75,25 +83,21 @@ class Node:
             BLANK['col'] = BLANK['col'] - 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y][x - 1] = tempBoard[y][x - 1], tempBoard[y][x]
-            # print(tempBoard)
             self.leftChild = self.makeChild(tempBoard, move)
         if move == 'R':
             BLANK['col'] = BLANK['col'] + 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y][x + 1] = tempBoard[y][x + 1], tempBoard[y][x]
-            # print(tempBoard)
             self.rightChild = self.makeChild(tempBoard, move)
         if move == 'U':
             BLANK['row'] = BLANK['row'] - 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y - 1][x] = tempBoard[y - 1][x], tempBoard[y][x]
-            # print(tempBoard)
             self.upChild = self.makeChild(tempBoard, move)
         if move == 'D':
             BLANK['row'] = BLANK['row'] + 1
             tempBoard = copy.deepcopy(self.board)
             tempBoard[y][x], tempBoard[y + 1][x] = tempBoard[y + 1][x], tempBoard[y][x]
-            # print(tempBoard)
             self.downChild = self.makeChild(tempBoard, move)
 
     def restrictMovement(self, move):
@@ -180,22 +184,26 @@ def dfs(node, moveCounter, depthCounter=0):
     node.visited = True
     discoveredSolutionFlag = node.isBoardCorrect
 
-    if discoveredSolutionFlag:
+    if check(node.board, SOLVEDBOARD):
         # print("Wynik:")
         # print(node.board)
         return node.board
 
     if node.depthCounter < MAXDEPTH:
         # print("Depth: ", node.depthCounter)
-
         for o in ORDER:
             node.restrictMovement(o)
             if node.children:
                 child = node.children[-1]
+                if check(child.board, SOLVEDBOARD):
+                    # print("Wynik:")
+                    # print(node.board)
+                    return child.board
                 result = dfs(child, node.depthCounter + 1, moveCounter)
                 if result is not None:
                     print("Zbadana glebokosc drzewa:", node.depthCounter)
-                    return result
+                else:
+                    return node.board
 
 
 def bfs(node, counter=0):
@@ -222,6 +230,7 @@ def bfs(node, counter=0):
                     visited.append(child)
                     listOfNodes.append(child)
 
+
 def searchByValue(matrix, value):
     rows = len(matrix)
     columns = len(matrix[0])
@@ -239,7 +248,7 @@ def manhattanDist(matrix, modelMatrix):
         for j in range(0, columns):
             if matrix[i][j] != modelMatrix[i][j]:
                 indexCorrect = searchByValue(modelMatrix, matrix[i][j])
-                distance += abs(j - indexCorrect[0]) + abs(i - indexCorrect[1])
+                distance += abs(j - indexCorrect[1]) + abs(i - indexCorrect[0])
     return distance
 
 
@@ -261,36 +270,50 @@ def astar(node, heuristic):
         for o in ORDER:
             node.restrictMovement(o)
         for child in node.children:
-            #print(child.board)
-            if heuristic == 'manh':
+            if heuristic == "manh":
                 cost = manhattanDist(child.board, SOLVEDBOARD)
                 if cost < minCost:
                     minCost = cost
                     minCostMove.clear()
                     minCostMove.append(child.birthMove)
-            if heuristic == 'hamm':
+            if heuristic == "hamm":
                 cost = hammingDist(child.board, SOLVEDBOARD)
                 if cost < minCost:
                     minCost = cost
                     minCostMove.clear()
                     minCostMove.append(child.birthMove)
             child.backMove()
-        #print(minCostMove[0])
+        print(minCostMove[0])
         node.restrictMovement(minCostMove[0])
         for child in node.children:
             if check(node.board, child.board) is False:
-                #print(child.board)
                 return astar(child, heuristic)
     return node.board
 
 
+def getOrder(orderSequence):
+    ORDER.clear()
+    for i in range(4):
+        ORDER.append(orderSequence[i])
+
+
+def getSolutionFileName():
+    return sys.argv[3] + "_" + sys.argv[1] + "_" + sys.argv[2] + "_sol.txt"
+
 
 if __name__ == '__main__':
-    readFromFileToBoard()
+    readFromFileToBoard(sys.argv[3])
+    ORDER = ['L', 'R', 'D', 'U']
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
-    ORDER = ['L', 'R', 'D', 'U']
-    #print(dfs(root, 0))
-    #print(bfs(root, 0))
-    writeBoardToFile(astar(root,'hamm'))
-    #astar(root,'hamm')
+    if sys.argv[1] == 'bfs':
+        getOrder(sys.argv[2])
+        writeBoardToFile(getSolutionFileName(), bfs(root, 0))
+    elif sys.argv[1] == 'dfs':
+        getOrder(sys.argv[2])
+        print(ORDER)
+        board = dfs(root, 0, 0)
+        print(board)
+        #writeBoardToFile(getSolutionFileName(), dfs(root, 0, 0))
+    elif sys.argv[1] == 'astar':
+        writeBoardToFile(getSolutionFileName(), astar(root, sys.argv[2]))
