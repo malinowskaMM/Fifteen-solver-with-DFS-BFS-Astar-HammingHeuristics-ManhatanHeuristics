@@ -197,7 +197,7 @@ def dfs(node, moveCounter, depthCounter=0):
                 child = node.children[-1]
                 result = dfs(child, node.depthCounter + 1, moveCounter)
                 if result is not None:
-                    print("Zbadana glebokosc drzewa:", node.depthCounter)
+                    #print("Zbadana glebokosc drzewa:", node.depthCounter)
                     return result
 
 
@@ -278,7 +278,7 @@ def astar(node, heuristic):
                     minCostMove.clear()
                     minCostMove.append(child.birthMove)
             child.backMove()
-        print(minCostMove[0])
+        #print(minCostMove[0])
         node.restrictMovement(minCostMove[0])
         for child in node.children:
             if check(node.board, child.board) is False:
@@ -306,9 +306,6 @@ if __name__ == '__main__':
         writeBoardToFile(getSolutionFileName(), bfs(root, 0))
     elif sys.argv[1] == 'dfs':
         getOrder(sys.argv[2])
-        print(ORDER)
-        board = dfs(root, 0, 0)
-        print(board)
-        #writeBoardToFile(getSolutionFileName(), dfs(root, 0, 0))
+        writeBoardToFile(getSolutionFileName(), dfs(root, 0, 0))
     elif sys.argv[1] == 'astar':
         writeBoardToFile(getSolutionFileName(), astar(root, sys.argv[2]))
