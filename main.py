@@ -1,7 +1,5 @@
 import copy
-import math
 import sys
-from random import random
 
 STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
@@ -19,6 +17,18 @@ def readFromFileToBoard():
     for line in file:
         STARTBOARD.append(line.split())  # every line is a table with char values
     print(STARTBOARD)
+
+def writeBoardToFile(board):
+    file = open('output.txt', 'w')
+    for col in range(0, len(board)):
+        line = ""
+        for row in range(0, len(board[col])):
+            line += board[col][row] + " "
+        file.write(line)
+        file.write("\n")
+
+
+
 
 
 def findZero(board):
@@ -265,11 +275,11 @@ def astar(node, heuristic):
                     minCostMove.clear()
                     minCostMove.append(child.birthMove)
             child.backMove()
-        print(minCostMove[0])
+        #print(minCostMove[0])
         node.restrictMovement(minCostMove[0])
         for child in node.children:
             if check(node.board, child.board) is False:
-                print(child.board)
+                #print(child.board)
                 return astar(child, heuristic)
     return node.board
 
@@ -282,4 +292,5 @@ if __name__ == '__main__':
     ORDER = ['L', 'R', 'D', 'U']
     #print(dfs(root, 0))
     #print(bfs(root, 0))
-    astar(root,'hamm')
+    writeBoardToFile(astar(root,'hamm'))
+    #astar(root,'hamm')
