@@ -112,15 +112,21 @@ class Node:
         y = BLANK['row']
         x = BLANK['col']
         if self.birthMove == 'L':
+            if x == 3:
+                return None
             self.board[y][x], self.board[y][x + 1] = self.board[y][x + 1], self.board[y][x]
         elif self.birthMove == 'R':
+            if x == 0:
+                return None
             self.board[y][x], self.board[y][x - 1] = self.board[y][x - 1], self.board[y][x]
         elif self.birthMove == 'U':
+            if y == 3:
+                return None
             self.board[y][x], self.board[y + 1][x] = self.board[y + 1][x], self.board[y][x]
         elif self.birthMove == 'D':
+            if y == 0:
+                return None
             self.board[y][x], self.board[y - 1][x] = self.board[y - 1][x], self.board[y][x]
-        for c in self.children:
-            del c
         self.children.clear()
         self.leftChild = None
         self.rightChild = None
@@ -154,7 +160,7 @@ class Node:
 #                         listOfNodes.append(child)
 
 
-def DFS(node, moveCounter, depthCounter=0):
+def dfs(node, moveCounter, depthCounter=0):
     if node is None:
         return
     if node.visited:
@@ -176,13 +182,13 @@ def DFS(node, moveCounter, depthCounter=0):
             node.restrictMovement(o)
             if node.children:
                 child = node.children[-1]
-                result= DFS(child, node.depthCounter + 1, moveCounter)
+                result = dfs(child, node.depthCounter + 1, moveCounter)
                 if result is not None:
                     print("Zbadana glebokosc drzewa:", node.depthCounter)
                     return result
 
 
-def BFS(node, counter=0):
+def bfs(node, counter=0):
     counter = 0
     if node is not None:
         visited = []
@@ -238,21 +244,21 @@ def hammingDist(matrix, modelMatrix):
     return diffCounter
 
 
-def ASTAR(node, heuristic):
-    while node.isBoardCorrect is False:
+def astar(node, heuristic):
+    while check(node.board, SOLVEDBOARD) is False:
         minCost = sys.maxsize
         minCostMove = []
         for o in ORDER:
             node.restrictMovement(o)
         for child in node.children:
             #print(child.board)
-            if heuristic == 'manhattan':
+            if heuristic == 'manh':
                 cost = manhattanDist(child.board, SOLVEDBOARD)
                 if cost < minCost:
                     minCost = cost
                     minCostMove.clear()
                     minCostMove.append(child.birthMove)
-            if heuristic == 'hamming':
+            if heuristic == 'hamm':
                 cost = hammingDist(child.board, SOLVEDBOARD)
                 if cost < minCost:
                     minCost = cost
@@ -263,7 +269,10 @@ def ASTAR(node, heuristic):
         node.restrictMovement(minCostMove[0])
         for child in node.children:
             if check(node.board, child.board) is False:
-                node = child
+                print(child.board)
+                return astar(child, heuristic)
+    return node.board
+
 
 
 if __name__ == '__main__':
@@ -271,7 +280,6 @@ if __name__ == '__main__':
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
     ORDER = ['L', 'R', 'D', 'U']
-    #print(DFS(root, 0))
-    #print(BFS(root, 0))
-    # print(BFS(root))
-    ASTAR(root,'hamming')
+    #print(dfs(root, 0))
+    #print(bfs(root, 0))
+    astar(root,'hamm')
