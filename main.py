@@ -211,11 +211,14 @@ def bfs(node, processedStates=0):
         visitedStates = []
         listOfNodes = []
         visitedStates.append(node)
+        depthCounter += 1
+        processedStates += 1
         listOfNodes.append(node)
         discoveredSolutionFlag = node.isBoardCorrect
         while listOfNodes and discoveredSolutionFlag is False:
             vertex = listOfNodes.pop(0)
             processedStates += 1
+            depthCounter += 1
             if vertex.birthMove is not None:
                 way.append(vertex.birthMove)
             discoveredSolutionFlag = vertex.isBoardCorrect
