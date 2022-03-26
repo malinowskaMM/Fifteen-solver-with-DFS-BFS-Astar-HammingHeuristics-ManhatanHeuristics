@@ -309,9 +309,11 @@ def writeStatistics(fileName, result):
             for letter in result[i]:
                 stringFromWay += letter
             file.write(stringFromWay)
-        line = str(result[i])
-        file.write(line)
-        file.write("\n")
+            file.write("\n")
+        else:
+            line = str(result[i])
+            file.write(line)
+            file.write("\n")
 
 
 if __name__ == '__main__':
