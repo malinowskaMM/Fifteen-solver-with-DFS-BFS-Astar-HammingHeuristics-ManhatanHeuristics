@@ -212,7 +212,8 @@ def bfs(node, processedStates=0):
         while listOfNodes and discoveredSolutionFlag is False:
             vertex = listOfNodes.pop(0)
             processedStates += 1
-            way.append(vertex.birthMove)
+            if vertex.birthMove is not None:
+                way.append(vertex.birthMove)
             discoveredSolutionFlag = vertex.isBoardCorrect
             for o in ORDER:
                 vertex.restrictMovement(o)
