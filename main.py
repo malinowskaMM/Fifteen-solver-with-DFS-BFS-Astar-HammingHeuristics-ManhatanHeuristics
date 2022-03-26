@@ -149,60 +149,26 @@ class Node:
         self.downChild = None
 
 
-# def DFS(node, counter=0):
-#     counter = 0
-#     if node is not None:
-#         if node.isBoardCorrect is False:
-#             visited = []
-#             listOfNodes = []
-#             visited.append(node)
-#             listOfNodes.append(node)
-#             discoveredSolutionFlag = node.isBoardCorrect
-#             while listOfNodes and discoveredSolutionFlag is False:
-#                 vertex = listOfNodes.pop()
-#                 counter += 1
-#                 discoveredSolutionFlag = node.isBoardCorrect
-#                 print("Counter: ", counter)
-#                 for o in ORDER:
-#                     vertex.restrictMovement(o)
-#                 for child in vertex.children:
-#                     if child.isBoardCorrect is True:
-#                         print("Wynik:")
-#                         print(child.board)
-#                         return child.board
-#                     if child not in visited:
-#                         visited.append(child)
-#                         listOfNodes.append(child)
+
+def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
+    if node is not None:
+        if node in visitedStates:
+            return
+        visitedStates.append(node)
+        if check(node.board, SOLVEDBOARD):
+            return [node.board, way, len(visitedStates), processedStates, depthCounter,
+                    round(time.time() - startTime, 3)]
+        if depthCounter < MAXDEPTH:
+            for o in ORDER:
+                node.restrictMovement(o)
+                if node.children:
+                    child = node.children[-1]
+                    way.append(child.birthMove)
+                    result = dfs(child, way, visitedStates, processedStates + 1, startTime, depthCounter + 1)
+                    if result is not None:
+                        return result
 
 
-def dfs(node, moveCounter, depthCounter=0):
-    if node is None:
-        return
-    if node.visited:
-        return
-
-    node.depthCounter = depthCounter
-    node.visited = True
-    discoveredSolutionFlag = node.isBoardCorrect
-
-    if check(node.board, SOLVEDBOARD):
-        # print("Wynik:")
-        # print(node.board)
-        return node.board
-
-    if node.depthCounter < MAXDEPTH:
-        # print("Depth: ", node.depthCounter)
-        for o in ORDER:
-            node.restrictMovement(o)
-            if node.children:
-                child = node.children[-1]
-                result = dfs(child, moveCounter, node.depthCounter + 1)
-                if result is not None:
-                    print("Zbadana glebokosc drzewa:", node.depthCounter)
-                    return result
-
-
-# add depth counter incrementation
 def bfs(node, processedStates=0):
     way = []
     startTime = time.time()
@@ -211,7 +177,6 @@ def bfs(node, processedStates=0):
         visitedStates = []
         listOfNodes = []
         visitedStates.append(node)
-        depthCounter += 1
         processedStates += 1
         listOfNodes.append(node)
         discoveredSolutionFlag = node.isBoardCorrect
@@ -227,7 +192,7 @@ def bfs(node, processedStates=0):
             for child in vertex.children:
                 if child.isBoardCorrect is True:
                     return [child.board, way, len(visitedStates), processedStates, depthCounter,
-                            time.time() - startTime]
+                            round(time.time() - startTime, 3)]
                 if child not in visitedStates:
                     visitedStates.append(child)
                     listOfNodes.append(child)
@@ -291,7 +256,7 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
         for child in node.children:
             if check(node.board, child.board) is False:
                 return astar(child, heuristic, way, startTime, processedStates + 1, visitedStates, depthCounter + 1)
-    return [node.board, way, visitedStates, processedStates, depthCounter, time.time() - startTime]
+    return [node.board, way, visitedStates, processedStates, depthCounter, round(time.time() - startTime, 3)]
 
 
 def getOrder(orderSequence):
@@ -335,7 +300,9 @@ if __name__ == '__main__':
         writeStatistics(getStatisticsFileName(), solution)
     elif sys.argv[1] == 'dfs':
         getOrder(sys.argv[2])
-        writeBoardToFile(getSolutionFileName(), dfs(root, 0, 0))
+        solution = dfs(root, [], [], 0, time.time(), 0)
+        writeBoardToFile(getSolutionFileName(), solution[0])
+        writeStatistics(getStatisticsFileName(), solution)
     elif sys.argv[1] == 'astar':
         solution = astar(root, sys.argv[2], [], time.time())
         writeBoardToFile(getSolutionFileName(), solution[0])
