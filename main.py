@@ -6,7 +6,7 @@ STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 BLANK = {}
 ORDER = []
-MAXDEPTH = 5
+MAXDEPTH = 20
 DFS_MOVE_COUNTER = 0
 
 
@@ -46,7 +46,6 @@ def findZero(board):
             if board[row][col] == '0':
                 BLANK['row'] = row
                 BLANK['col'] = col
-    # print(BLANK)
 
 
 def check(board, solvedBoard):
@@ -149,7 +148,6 @@ class Node:
         self.downChild = None
 
 
-
 def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
     if node is not None:
         if node in visitedStates:
@@ -157,7 +155,7 @@ def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
         visitedStates.append(node)
         if check(node.board, SOLVEDBOARD):
             return [node.board, way, len(visitedStates), processedStates, depthCounter,
-                    round(time.time() - startTime, 3)]
+                    time.time() - startTime]
         if depthCounter < MAXDEPTH:
             for o in ORDER:
                 node.restrictMovement(o)
@@ -178,6 +176,7 @@ def bfs(node, processedStates=0):
         listOfNodes = []
         visitedStates.append(node)
         processedStates += 1
+        depthCounter += 1
         listOfNodes.append(node)
         discoveredSolutionFlag = node.isBoardCorrect
         while listOfNodes and discoveredSolutionFlag is False:
@@ -192,7 +191,7 @@ def bfs(node, processedStates=0):
             for child in vertex.children:
                 if child.isBoardCorrect is True:
                     return [child.board, way, len(visitedStates), processedStates, depthCounter,
-                            round(time.time() - startTime, 3)]
+                            time.time() - startTime]
                 if child not in visitedStates:
                     visitedStates.append(child)
                     listOfNodes.append(child)
@@ -256,7 +255,7 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
         for child in node.children:
             if check(node.board, child.board) is False:
                 return astar(child, heuristic, way, startTime, processedStates + 1, visitedStates, depthCounter + 1)
-    return [node.board, way, visitedStates, processedStates, depthCounter, round(time.time() - startTime, 3)]
+    return [node.board, way, visitedStates, processedStates, depthCounter, time.time() - startTime]
 
 
 def getOrder(orderSequence):
@@ -277,15 +276,23 @@ def writeStatistics(fileName, result):
     file = open(fileName, 'w')
     for i in range(1, len(result)):
         if i == 1:
-            stringFromWay = ""
-            for letter in result[i]:
-                stringFromWay += letter
-            file.write(stringFromWay)
+            file.write(str(len(result[i])))
             file.write("\n")
         else:
             line = str(result[i])
             file.write(line)
             file.write("\n")
+
+
+def writeSolution(fileName, result):
+    file = open(fileName, 'w')
+    sol = result[1]
+    file.write(str(len(sol)))
+    file.write("\n")
+    way = ""
+    for i in range(0, len(sol)):
+        way += sol[i]
+    file.write(way)
 
 
 if __name__ == '__main__':
@@ -296,14 +303,14 @@ if __name__ == '__main__':
     if sys.argv[1] == 'bfs':
         getOrder(sys.argv[2])
         solution = bfs(root, 0)
-        writeBoardToFile(getSolutionFileName(), solution[0])
+        writeSolution(getSolutionFileName(), solution)
         writeStatistics(getStatisticsFileName(), solution)
     elif sys.argv[1] == 'dfs':
         getOrder(sys.argv[2])
         solution = dfs(root, [], [], 0, time.time(), 0)
-        writeBoardToFile(getSolutionFileName(), solution[0])
+        writeSolution(getSolutionFileName(), solution)
         writeStatistics(getStatisticsFileName(), solution)
     elif sys.argv[1] == 'astar':
         solution = astar(root, sys.argv[2], [], time.time())
-        writeBoardToFile(getSolutionFileName(), solution[0])
+        writeSolution(getSolutionFileName(), solution)
         writeStatistics(getStatisticsFileName(), solution)
