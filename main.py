@@ -181,9 +181,13 @@ def dfs(node, moveCounter, depthCounter=0):
     if node.visited:
         return
 
+    node.depthCounter = depthCounter
     node.visited = True
+    discoveredSolutionFlag = node.isBoardCorrect
 
     if check(node.board, SOLVEDBOARD):
+        # print("Wynik:")
+        # print(node.board)
         return node.board
 
     if node.depthCounter < MAXDEPTH:
@@ -192,9 +196,9 @@ def dfs(node, moveCounter, depthCounter=0):
             node.restrictMovement(o)
             if node.children:
                 child = node.children[-1]
-                result = dfs(child, moveCounter, depthCounter + 1)
+                result = dfs(child, moveCounter, node.depthCounter + 1)
                 if result is not None:
-                    # print("Zbadana glebokosc drzewa:", node.depthCounter)
+                    print("Zbadana glebokosc drzewa:", node.depthCounter)
                     return result
 
 
