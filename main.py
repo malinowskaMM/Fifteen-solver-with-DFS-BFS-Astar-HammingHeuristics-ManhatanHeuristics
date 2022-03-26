@@ -198,28 +198,30 @@ def dfs(node, moveCounter, depthCounter=0):
                     return result
 
 
-def bfs(node, counter=0):
-    counter = 0
+# add depth counter incrementation
+def bfs(node, processedStates=0):
+    way = []
+    startTime = time.time()
+    depthCounter = 0
     if node is not None:
-        visited = []
+        visitedStates = []
         listOfNodes = []
-        visited.append(node)
+        visitedStates.append(node)
         listOfNodes.append(node)
         discoveredSolutionFlag = node.isBoardCorrect
         while listOfNodes and discoveredSolutionFlag is False:
             vertex = listOfNodes.pop(0)
-            counter += 1
+            processedStates += 1
+            way.append(vertex.birthMove)
             discoveredSolutionFlag = vertex.isBoardCorrect
             for o in ORDER:
                 vertex.restrictMovement(o)
             for child in vertex.children:
                 if child.isBoardCorrect is True:
-                    print("Ilosc odwiedzonych stanów: ", counter)
-                    print("Wynik:")
-                    print(child.board)
-                    return child.board
-                if child not in visited:
-                    visited.append(child)
+                    return [child.board, way, len(visitedStates), processedStates, depthCounter,
+                            time.time() - startTime]
+                if child not in visitedStates:
+                    visitedStates.append(child)
                     listOfNodes.append(child)
 
 
@@ -276,7 +278,6 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
                     minCostMove.clear()
                     minCostMove.append(child.birthMove)
             child.backMove()
-        # print(minCostMove[0])
         node.restrictMovement(minCostMove[0])
         way.append((minCostMove[0]))
         for child in node.children:
@@ -319,12 +320,13 @@ if __name__ == '__main__':
     root = Node(STARTBOARD)
     if sys.argv[1] == 'bfs':
         getOrder(sys.argv[2])
-        writeBoardToFile(getSolutionFileName(), bfs(root, 0))
+        solution = bfs(root, 0)
+        writeBoardToFile(getSolutionFileName(), solution[0])
+        writeStatistics(getStatisticsFileName(), solution)
     elif sys.argv[1] == 'dfs':
         getOrder(sys.argv[2])
         writeBoardToFile(getSolutionFileName(), dfs(root, 0, 0))
     elif sys.argv[1] == 'astar':
-        result = astar(root, sys.argv[2], [], time.time())
-        print(result)
-        # writeBoardToFile(getSolutionFileName(), astar(root, sys.argv[2])[0])
-        # writeStatistics(getStatisticsFileName(), astar(root, sys.argv[2]))
+        solution = astar(root, sys.argv[2], [], time.time())
+        writeBoardToFile(getSolutionFileName(), solution[0])
+        writeStatistics(getStatisticsFileName(), solution)
