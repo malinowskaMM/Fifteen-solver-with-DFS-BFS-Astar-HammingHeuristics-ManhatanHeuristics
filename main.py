@@ -1,5 +1,6 @@
 import copy
 import sys
+import time
 
 STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
@@ -180,13 +181,9 @@ def dfs(node, moveCounter, depthCounter=0):
     if node.visited:
         return
 
-    node.depthCounter = depthCounter
     node.visited = True
-    discoveredSolutionFlag = node.isBoardCorrect
 
     if check(node.board, SOLVEDBOARD):
-        # print("Wynik:")
-        # print(node.board)
         return node.board
 
     if node.depthCounter < MAXDEPTH:
@@ -195,9 +192,9 @@ def dfs(node, moveCounter, depthCounter=0):
             node.restrictMovement(o)
             if node.children:
                 child = node.children[-1]
-                result = dfs(child, node.depthCounter + 1, moveCounter)
+                result = dfs(child, moveCounter, depthCounter + 1)
                 if result is not None:
-                    #print("Zbadana glebokosc drzewa:", node.depthCounter)
+                    # print("Zbadana glebokosc drzewa:", node.depthCounter)
                     return result
 
 
@@ -217,7 +214,7 @@ def bfs(node, counter=0):
                 vertex.restrictMovement(o)
             for child in vertex.children:
                 if child.isBoardCorrect is True:
-                    print("Ilosc odwiedzonych wezlow: ", counter)
+                    print("Ilosc odwiedzonych stanów: ", counter)
                     print("Wynik:")
                     print(child.board)
                     return child.board
@@ -258,12 +255,13 @@ def hammingDist(matrix, modelMatrix):
     return diffCounter
 
 
-def astar(node, heuristic):
+def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, depthCounter=0):
     while check(node.board, SOLVEDBOARD) is False:
         minCost = sys.maxsize
         minCostMove = []
         for o in ORDER:
             node.restrictMovement(o)
+            visitedStates += 1
         for child in node.children:
             if heuristic == "manh":
                 cost = manhattanDist(child.board, SOLVEDBOARD)
@@ -278,12 +276,13 @@ def astar(node, heuristic):
                     minCostMove.clear()
                     minCostMove.append(child.birthMove)
             child.backMove()
-        #print(minCostMove[0])
+        # print(minCostMove[0])
         node.restrictMovement(minCostMove[0])
+        way.append((minCostMove[0]))
         for child in node.children:
             if check(node.board, child.board) is False:
-                return astar(child, heuristic)
-    return node.board
+                return astar(child, heuristic, way, startTime, processedStates + 1, visitedStates, depthCounter + 1)
+    return [node.board, way, visitedStates, processedStates, depthCounter, time.time() - startTime]
 
 
 def getOrder(orderSequence):
@@ -293,7 +292,24 @@ def getOrder(orderSequence):
 
 
 def getSolutionFileName():
-    return sys.argv[3] + "_" + sys.argv[1] + "_" + sys.argv[2] + "_sol.txt"
+    return sys.argv[3].replace(".txt", "") + "_" + sys.argv[1] + "_" + sys.argv[2] + "_sol.txt"
+
+
+def getStatisticsFileName():
+    return sys.argv[3].replace(".txt", "") + "_" + sys.argv[1] + "_" + sys.argv[2] + "_stats.txt"
+
+
+def writeStatistics(fileName, result):
+    file = open(fileName, 'w')
+    for i in range(1, len(result)):
+        if i == 1:
+            stringFromWay = ""
+            for letter in result[i]:
+                stringFromWay += letter
+            file.write(stringFromWay)
+        line = str(result[i])
+        file.write(line)
+        file.write("\n")
 
 
 if __name__ == '__main__':
@@ -308,4 +324,7 @@ if __name__ == '__main__':
         getOrder(sys.argv[2])
         writeBoardToFile(getSolutionFileName(), dfs(root, 0, 0))
     elif sys.argv[1] == 'astar':
-        writeBoardToFile(getSolutionFileName(), astar(root, sys.argv[2]))
+        result = astar(root, sys.argv[2], [], time.time())
+        print(result)
+        # writeBoardToFile(getSolutionFileName(), astar(root, sys.argv[2])[0])
+        # writeStatistics(getStatisticsFileName(), astar(root, sys.argv[2]))
