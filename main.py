@@ -177,7 +177,7 @@ def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
 
 def bfs(node, processedStates=0):
     way = []
-    startTime = time.time()
+    startTime = time.time_ns()
     depthCounter = 0
     if node is not None:
         visitedStates = []
