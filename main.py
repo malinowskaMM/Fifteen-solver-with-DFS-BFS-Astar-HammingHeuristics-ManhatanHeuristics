@@ -163,7 +163,7 @@ def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
         visitedStates.append(node)
         if check(node.board, SOLVEDBOARD):
             return [node.board, way, len(visitedStates), processedStates, depthCounter,
-                    time.time() - startTime]
+                    time.time_ns() - startTime]
         if depthCounter < MAXDEPTH:
             for o in ORDER:
                 node.restrictMovement(o)
@@ -199,7 +199,7 @@ def bfs(node, processedStates=0):
             for child in vertex.children:
                 if child.isBoardCorrect is True:
                     return [child.board, way, len(visitedStates), processedStates, depthCounter,
-                            time.time() - startTime]
+                            time.time_ns() - startTime]
                 if child not in visitedStates:
                     visitedStates.append(child)
                     listOfNodes.append(child)
@@ -263,7 +263,7 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
         for child in node.children:
             if check(node.board, child.board) is False:
                 return astar(child, heuristic, way, startTime, processedStates + 1, visitedStates, depthCounter + 1)
-    return [node.board, way, visitedStates, processedStates, depthCounter, time.time() - startTime]
+    return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
 
 
 def getOrder(orderSequence):
@@ -286,6 +286,9 @@ def writeStatistics(fileName, result):
         if i == 1:
             file.write(str(len(result[i])))
             file.write("\n")
+        elif i == 5:
+                time = result[i]/1000
+                file.write("{:.3f}".format(time))
         else:
             line = str(result[i])
             file.write(line)
@@ -315,10 +318,10 @@ if __name__ == '__main__':
         writeStatistics(getStatisticsFileName(), solution)
     elif sys.argv[1] == 'dfs':
         getOrder(sys.argv[2])
-        solution = dfs(root, [], [], 0, time.time(), 0)
+        solution = dfs(root, [], [], 0, time.time_ns(), 0)
         writeSolution(getSolutionFileName(), solution)
         writeStatistics(getStatisticsFileName(), solution)
     elif sys.argv[1] == 'astar':
-        solution = astar(root, sys.argv[2], [], time.time())
+        solution = astar(root, sys.argv[2], [], time.time_ns())
         writeSolution(getSolutionFileName(), solution)
         writeStatistics(getStatisticsFileName(), solution)
