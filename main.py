@@ -107,28 +107,40 @@ class Node:
         x = BLANK['col']
         if move == 'L':
             if x == 0:
+                # print("kraniec lewym")
                 return None
             if self.birthMove == 'R':
+                # print("byłem w prawo, nie pojde w lewo")
                 return None
+            # print("ide w lewo")
             self.move(move)
         if move == 'R':
             if x == 3:
+                # print("kraniec prawy")
                 return None
             if self.birthMove == 'L':
+                # print("byłem w lewo, nie pojde w prawo")
                 return None
             self.move(move)
+            # print("ide w prawo")
         if move == 'U':
             if y == 0:
+                # print("kraniec gorny")
                 return None  # Ending branch up
             if self.birthMove == 'D':
+                # print("byłem w dole, nie pojde w gore")
                 return None
             self.move(move)
+            # print("ide w dol")
         if move == 'D':
             if y == 3:
+                # print("kraniec dolny")
                 return None  # Ending branch dqqown
             if self.birthMove == 'U':
+                # print("byłem w górze, nie pojde w dół")
                 return None
             self.move(move)
+            # print("ide w gore")
 
     def backMove(self):
         findZero(self.board)
@@ -157,11 +169,14 @@ class Node:
         self.downChild = None
 
 
-def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
+def dfs(node, way, visitedStates, processedStates, startTime, states, depthCounter=0):
     if node is not None:
         if node in visitedStates:
             return
         visitedStates.append(node)
+        states.append(node.board)
+        if node.board in states:
+            return
         if check(node.board, SOLVEDBOARD):
             return [node.board, way, len(visitedStates), processedStates, depthCounter,
                     time.time() - startTime]
@@ -171,7 +186,7 @@ def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
                 if node.children:
                     child = node.children[-1]
                     way.append(child.birthMove)
-                    result = dfs(child, way, visitedStates, processedStates + 1, startTime, depthCounter + 1)
+                    result = dfs(child, way, visitedStates, processedStates + 1, startTime, states, depthCounter + 1)
                     if result is not None:
                         return result
 
@@ -309,7 +324,7 @@ if __name__ == '__main__':
     ORDER = ['L', 'R', 'D', 'U']
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
-    solution = dfs(root, [], [], 0, time.time(), 0)
+    solution = dfs(root, [], [], 0, time.time(), [], 0)
     writeSolution("outputSol.txt", solution)
     writeStatistics("outputStats.txt", solution)
 
