@@ -2,10 +2,11 @@ import copy
 import sys
 import time
 
-STARTBOARD = []
+STARTBOARD = [['1', '2', '3', '4'], ['5', '7', '0', '8'], ['9', '6', '10', '12'], ['13', '14', '11', '15']]
+
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 BLANK = {}
-ORDER = []
+ORDER = ['U', 'D', 'L', 'R']
 MAXDEPTH = 20
 DFS_MOVE_COUNTER = 0
 
@@ -107,18 +108,26 @@ class Node:
         if move == 'L':
             if x == 0:
                 return None
+            if self.birthMove == 'R':
+                return None
             self.move(move)
         if move == 'R':
             if x == 3:
+                return None
+            if self.birthMove == 'L':
                 return None
             self.move(move)
         if move == 'U':
             if y == 0:
                 return None  # Ending branch up
+            if self.birthMove == 'D':
+                return None
             self.move(move)
         if move == 'D':
             if y == 3:
-                return None  # Ending branch down
+                return None  # Ending branch dqqown
+            if self.birthMove == 'U':
+                return None
             self.move(move)
 
     def backMove(self):
@@ -296,21 +305,28 @@ def writeSolution(fileName, result):
 
 
 if __name__ == '__main__':
-    readFromFileToBoard(sys.argv[3])
+
     ORDER = ['L', 'R', 'D', 'U']
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
-    if sys.argv[1] == 'bfs':
-        getOrder(sys.argv[2])
-        solution = bfs(root, 0)
-        writeSolution(getSolutionFileName(), solution)
-        writeStatistics(getStatisticsFileName(), solution)
-    elif sys.argv[1] == 'dfs':
-        getOrder(sys.argv[2])
-        solution = dfs(root, [], [], 0, time.time(), 0)
-        writeSolution(getSolutionFileName(), solution)
-        writeStatistics(getStatisticsFileName(), solution)
-    elif sys.argv[1] == 'astar':
-        solution = astar(root, sys.argv[2], [], time.time())
-        writeSolution(getSolutionFileName(), solution)
-        writeStatistics(getStatisticsFileName(), solution)
+    solution = dfs(root, [], [], 0, time.time(), 0)
+    writeSolution("outputSol.txt", solution)
+    writeStatistics("outputStats.txt", solution)
+
+
+    # # readFromFileToBoard(sys.argv[3])
+    #
+    # if sys.argv[1] == 'bfs':
+    #     getOrder(sys.argv[2])
+    #     solution = bfs(root, 0)
+    #     writeSolution(getSolutionFileName(), solution)
+    #     writeStatistics(getStatisticsFileName(), solution)
+    # elif sys.argv[1] == 'dfs':
+    #     getOrder(sys.argv[2])
+    #     solution = dfs(root, [], [], 0, time.time(), 0)
+    #     writeSolution(getSolutionFileName(), solution)
+    #     writeStatistics(getStatisticsFileName(), solution)
+    # elif sys.argv[1] == 'astar':
+    #     solution = astar(root, sys.argv[2], [], time.time())
+    #     writeSolution(getSolutionFileName(), solution)
+    #     writeStatistics(getStatisticsFileName(), solution)
