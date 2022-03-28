@@ -107,18 +107,26 @@ class Node:
         if move == 'L':
             if x == 0:
                 return None
+            if self.birthMove == "R":
+                return None
             self.move(move)
         if move == 'R':
             if x == 3:
+                return None
+            if self.birthMove == "L":
                 return None
             self.move(move)
         if move == 'U':
             if y == 0:
                 return None  # Ending branch up
+            if self.birthMove == "D":
+                return None
             self.move(move)
         if move == 'D':
             if y == 3:
                 return None  # Ending branch down
+            if self.birthMove == "U":
+                return None
             self.move(move)
 
     def backMove(self):
