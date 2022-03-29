@@ -262,7 +262,10 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
         way.append((minCostMove[0]))
         for child in node.children:
             if check(node.board, child.board) is False:
-                return astar(child, heuristic, way, startTime, processedStates + 1, visitedStates, depthCounter + 1)
+                node = child
+                processedStates += 1
+                depthCounter += 1
+                #return astar(child, heuristic, way, startTime, processedStates + 1, visitedStates, depthCounter + 1)
     return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
 
 
