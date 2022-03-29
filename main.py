@@ -196,25 +196,6 @@ def dfs(node, startTime):
     return [solution, way, len(visitedStates), processedStateCounter, solutionDepth, elapsedTime]
 
 
-# def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
-#     if node is not None:
-#         if node in visitedStates:
-#             return
-#         visitedStates.append(node)
-#         if check(node.board, SOLVEDBOARD):
-#             return [node.board, way, len(visitedStates), processedStates, depthCounter,
-#                     time.time_ns() - startTime]
-#         if depthCounter < MAXDEPTH:
-#             for o in ORDER:
-#                 node.restrictMovement(o)
-#                 if node.children:
-#                     child = node.children[-1]
-#                     way.append(child.birthMove)
-#                     result = dfs(child, way, visitedStates, processedStates + 1, startTime, depthCounter + 1)
-#                     if result is not None:
-#                         return result
-
-
 def bfs(node, processedStates=0):
     way = []
     startTime = time.time_ns()
