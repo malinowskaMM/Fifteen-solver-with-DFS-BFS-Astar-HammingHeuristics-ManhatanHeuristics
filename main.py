@@ -156,23 +156,64 @@ class Node:
         self.downChild = None
 
 
-def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
-    if node is not None:
-        if node in visitedStates:
-            return
-        visitedStates.append(node)
-        if check(node.board, SOLVEDBOARD):
-            return [node.board, way, len(visitedStates), processedStates, depthCounter,
-                    time.time_ns() - startTime]
-        if depthCounter < MAXDEPTH:
-            for o in ORDER:
-                node.restrictMovement(o)
-                if node.children:
-                    child = node.children[-1]
-                    way.append(child.birthMove)
-                    result = dfs(child, way, visitedStates, processedStates + 1, startTime, depthCounter + 1)
-                    if result is not None:
-                        return result
+
+def dfs(node, startTime):
+    isSolutionFound = False
+    visitedStates = []
+    nodeList = []
+    way = []
+    nodeList.append(node)
+    visitedStates.append(node)
+    processedStateCounter = 0
+    depthCounter = 0
+    solution = -1
+
+    while nodeList and not isSolutionFound:
+        currentNode = nodeList.pop(-1)
+
+        processedStateCounter += 1
+        depthCounter += 1
+        print(processedStateCounter)
+        # print(way)
+        # -------- process currentNode --------
+        if currentNode.birthMove is not None:
+            print("birth move:", currentNode.birthMove)
+            way.append(currentNode.birthMove)
+        isSolutionFound = currentNode.isBoardCorrect
+        if isSolutionFound:
+            solution = currentNode.board
+            continue
+        for o in ORDER:
+            currentNode.restrictMovement(o)
+        # -------------------------------------
+        for child in currentNode.children:
+            if child in visitedStates:
+                continue
+            nodeList.append(child)
+            visitedStates.append(child)
+
+    elapsedTime = time.time_ns() - startTime
+    print(solution)
+    return [solution, way, len(visitedStates), processedStateCounter, depthCounter, elapsedTime]
+
+
+# def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
+#     if node is not None:
+#         if node in visitedStates:
+#             return
+#         visitedStates.append(node)
+#         if check(node.board, SOLVEDBOARD):
+#             return [node.board, way, len(visitedStates), processedStates, depthCounter,
+#                     time.time_ns() - startTime]
+#         if depthCounter < MAXDEPTH:
+#             for o in ORDER:
+#                 node.restrictMovement(o)
+#                 if node.children:
+#                     child = node.children[-1]
+#                     way.append(child.birthMove)
+#                     result = dfs(child, way, visitedStates, processedStates + 1, startTime, depthCounter + 1)
+#                     if result is not None:
+#                         return result
 
 
 def bfs(node, processedStates=0):
@@ -310,7 +351,7 @@ if __name__ == '__main__':
         writeStatistics(sys.argv[5], solution)
     elif sys.argv[1] == 'dfs':
         getOrder(sys.argv[2])
-        solution = dfs(root, [], [], 0, time.time_ns(), 0)
+        solution = dfs(root, time.time_ns())
         writeSolution(sys.argv[4], solution)
         writeStatistics(sys.argv[5], solution)
     elif sys.argv[1] == 'astar':
