@@ -1,3 +1,4 @@
+from collections import deque
 import copy
 import sys
 import time
@@ -6,7 +7,7 @@ STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 BLANK = {}
 ORDER = []
-MAXDEPTH = 20
+MAXDEPTH = 9
 DFS_MOVE_COUNTER = 0
 
 
@@ -56,7 +57,7 @@ def check(board, solvedBoard):
 
 
 class Node:
-    def __init__(self, board, parent=None, birthMove=None):
+    def __init__(self, board, parent=None, birthMove=None, depth=0):
         self.board = board
         self.isBoardCorrect = check(self.board, SOLVEDBOARD)
         self.parent = parent
@@ -67,10 +68,11 @@ class Node:
         self.downChild = None
         self.children = []
         self.visited = False
-        self.depthCounter = 0
+        self.depth = depth
 
     def makeChild(self, board, birthMove):
         child = Node(board, self, birthMove)
+        child.depth = self.depth + 1
         self.children.append(child)
         return child
 
@@ -156,45 +158,42 @@ class Node:
         self.downChild = None
 
 
-
 def dfs(node, startTime):
     isSolutionFound = False
-    visitedStates = []
-    nodeList = []
+    visitedStates = deque()
+    nodeList = deque()
     way = []
     nodeList.append(node)
-    visitedStates.append(node)
     processedStateCounter = 0
-    depthCounter = 0
+    solutionDepth = -1
     solution = -1
 
     while nodeList and not isSolutionFound:
-        currentNode = nodeList.pop(-1)
+        currentNode = nodeList.pop()
+        if currentNode in visitedStates:
+            continue
+        visitedStates.append(currentNode)
 
-        processedStateCounter += 1
-        depthCounter += 1
-        print(processedStateCounter)
-        # print(way)
         # -------- process currentNode --------
+        processedStateCounter += 1
         if currentNode.birthMove is not None:
-            print("birth move:", currentNode.birthMove)
             way.append(currentNode.birthMove)
-        isSolutionFound = currentNode.isBoardCorrect
+            isSolutionFound = currentNode.isBoardCorrect
         if isSolutionFound:
             solution = currentNode.board
+            solutionDepth = currentNode.depth
             continue
-        for o in ORDER:
-            currentNode.restrictMovement(o)
+        if currentNode.depth < MAXDEPTH:
+            for o in ORDER:
+                currentNode.restrictMovement(o)
         # -------------------------------------
         for child in currentNode.children:
-            if child in visitedStates:
-                continue
-            nodeList.append(child)
-            visitedStates.append(child)
+            if child not in visitedStates:
+                nodeList.append(child)
 
     elapsedTime = time.time_ns() - startTime
     print(solution)
-    return [solution, way, len(visitedStates), processedStateCounter, depthCounter, elapsedTime]
+    return [solution, way, len(visitedStates), processedStateCounter, solutionDepth, elapsedTime]
 
 
 # def dfs(node, way, visitedStates, processedStates, startTime, depthCounter=0):
