@@ -273,7 +273,7 @@ def writeStatistics(fileName, result):
             file.write("\n")
         elif i == 5:
             time = result[i] / 1000000
-            file.write("{:.3f}".format(time))
+            file.write("{:.6f}".format(time))
         else:
             line = str(result[i])
             file.write(line)
@@ -291,25 +291,21 @@ def writeSolution(fileName, result):
     file.write(way)
 
 if __name__ == '__main__':
-    # readFromFileToBoard(sys.argv[3])
-    readFromFileToBoard("4x4_04_00004.txt")
+    readFromFileToBoard(sys.argv[3])
     ORDER = ['L', 'R', 'D', 'U']
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
-    solution = astar(root, "manh", [], time.time_ns())
-    writeSolution('sol',solution)
-    writeStatistics('stat',solution)
-    # if sys.argv[1] == 'bfs':
-    #     getOrder(sys.argv[2])
-    #     solution = bfs(root, 0)
-    #     writeSolution(sys.argv[4], solution)
-    #     writeStatistics(sys.argv[5], solution)
-    # elif sys.argv[1] == 'dfs':
-    #     getOrder(sys.argv[2])
-    #     solution = dfs(root, [], [], 0, time.time_ns(), 0)
-    #     writeSolution(sys.argv[4], solution)
-    #     writeStatistics(sys.argv[5], solution)
-    # elif sys.argv[1] == 'astar':
-    #     solution = astar(root, sys.argv[2], [], time.time_ns())
-    #     writeSolution(sys.argv[4], solution)
-    #     writeStatistics(sys.argv[5], solution)
+    if sys.argv[1] == 'bfs':
+        getOrder(sys.argv[2])
+        solution = bfs(root, 0)
+        writeSolution(sys.argv[4], solution)
+        writeStatistics(sys.argv[5], solution)
+    elif sys.argv[1] == 'dfs':
+        getOrder(sys.argv[2])
+        solution = dfs(root, [], [], 0, time.time_ns(), 0)
+        writeSolution(sys.argv[4], solution)
+        writeStatistics(sys.argv[5], solution)
+    elif sys.argv[1] == 'astar':
+        solution = astar(root, sys.argv[2], [], time.time_ns())
+        writeSolution(sys.argv[4], solution)
+        writeStatistics(sys.argv[5], solution)
