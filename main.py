@@ -1,4 +1,5 @@
 import copy
+import heapq
 import sys
 import time
 
@@ -58,6 +59,7 @@ class Node:
         self.children = []
         self.visited = False
         self.depthCounter = 0
+        self.cost = 0
 
     def makeChild(self, board, birthMove):
         child = Node(board, self, birthMove)
@@ -227,35 +229,31 @@ def hammingDist(matrix, modelMatrix):
     return diffCounter
 
 
+def heapsort(iterable):
+    h = []
+    for value in iterable:
+        heapq.heappush(h, value)
+    return [heapq.heappop(h) for i in range(len(h))]
+
+
 def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, depthCounter=0):
+    h = []
     while check(node.board, SOLVEDBOARD) is False:
-        minCost = sys.maxsize
-        minCostMove = []
         for o in ORDER:
             node.restrictMovement(o)
             visitedStates += 1
         for child in node.children:
+            cost = 0
             if heuristic == "manh":
-                cost = manhattanDist(child.board, SOLVEDBOARD)
-                if cost < minCost:
-                    minCost = cost
-                    minCostMove.clear()
-                    minCostMove.append(child.birthMove)
+                cost = depthCounter + manhattanDist(child.board, SOLVEDBOARD)
             if heuristic == "hamm":
-                cost = hammingDist(child.board, SOLVEDBOARD)
-                if cost < minCost:
-                    minCost = cost
-                    minCostMove.clear()
-                    minCostMove.append(child.birthMove)
+                cost = depthCounter + hammingDist(child.board, SOLVEDBOARD)
+            heapq.heappush(h, (cost, copy.deepcopy(child.board)))
             child.backMove()
-        node.restrictMovement(minCostMove[0])
-        way.append((minCostMove[0]))
-        for child in node.children:
-            if check(node.board, child.board) is False:
-                node = child
-                processedStates += 1
-                depthCounter += 1
-                #return astar(child, heuristic, way, startTime, processedStates + 1, visitedStates, depthCounter + 1)
+        heapsort(h)
+        node.board = heapq.heappop(h)[1]
+        processedStates += 1
+        depthCounter += 1
     return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
 
 
@@ -290,23 +288,26 @@ def writeSolution(fileName, result):
         way += sol[i]
     file.write(way)
 
-
 if __name__ == '__main__':
-    readFromFileToBoard(sys.argv[3])
+    # readFromFileToBoard(sys.argv[3])
+    readFromFileToBoard("4x4_04_00004.txt")
     ORDER = ['L', 'R', 'D', 'U']
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
-    if sys.argv[1] == 'bfs':
-        getOrder(sys.argv[2])
-        solution = bfs(root, 0)
-        writeSolution(sys.argv[4], solution)
-        writeStatistics(sys.argv[5], solution)
-    elif sys.argv[1] == 'dfs':
-        getOrder(sys.argv[2])
-        solution = dfs(root, [], [], 0, time.time_ns(), 0)
-        writeSolution(sys.argv[4], solution)
-        writeStatistics(sys.argv[5], solution)
-    elif sys.argv[1] == 'astar':
-        solution = astar(root, sys.argv[2], [], time.time_ns())
-        writeSolution(sys.argv[4], solution)
-        writeStatistics(sys.argv[5], solution)
+    solution = astar(root, "manh", [], time.time_ns())
+    writeSolution('sol',solution)
+    writeStatistics('stat',solution)
+    # if sys.argv[1] == 'bfs':
+    #     getOrder(sys.argv[2])
+    #     solution = bfs(root, 0)
+    #     writeSolution(sys.argv[4], solution)
+    #     writeStatistics(sys.argv[5], solution)
+    # elif sys.argv[1] == 'dfs':
+    #     getOrder(sys.argv[2])
+    #     solution = dfs(root, [], [], 0, time.time_ns(), 0)
+    #     writeSolution(sys.argv[4], solution)
+    #     writeStatistics(sys.argv[5], solution)
+    # elif sys.argv[1] == 'astar':
+    #     solution = astar(root, sys.argv[2], [], time.time_ns())
+    #     writeSolution(sys.argv[4], solution)
+    #     writeStatistics(sys.argv[5], solution)
