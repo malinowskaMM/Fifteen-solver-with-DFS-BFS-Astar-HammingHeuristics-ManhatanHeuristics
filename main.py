@@ -248,10 +248,12 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
                 cost = depthCounter + manhattanDist(child.board, SOLVEDBOARD)
             if heuristic == "hamm":
                 cost = depthCounter + hammingDist(child.board, SOLVEDBOARD)
-            heapq.heappush(h, (cost, copy.deepcopy(child.board)))
+            heapq.heappush(h, (cost, copy.deepcopy(child.board), child.birthMove))
             child.backMove()
         heapsort(h)
-        node.board = heapq.heappop(h)[1]
+        result = heapq.heappop(h)
+        node.board = result[1]
+        way.append(result[2])
         processedStates += 1
         depthCounter += 1
     return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
