@@ -20,16 +20,6 @@ def readFromFileToBoard(fileName):
         STARTBOARD.append(line.split())  # every line is a table with char values
 
 
-def readFromInputToBoard():
-    file = open('input.txt', 'r')
-    w = file.read(1)  # w - numbers of rows
-    file.seek(2)
-    k = file.read(1)  # k - numbers of columns
-    file.seek(5)  # set postion at the beginning of second line of file
-    for line in file:
-        STARTBOARD.append(line.split())  # every line is a table with char values
-
-
 def writeBoardToFile(fileName, board):
     file = open(fileName, 'w')
     for col in range(0, len(board)):
