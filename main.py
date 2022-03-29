@@ -279,7 +279,7 @@ def writeStatistics(fileName, result):
             file.write(str(len(result[i])))
             file.write("\n")
         elif i == 5:
-            time = result[i] / 1000
+            time = result[i] / 1000000
             file.write("{:.3f}".format(time))
         else:
             line = str(result[i])
