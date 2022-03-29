@@ -272,14 +272,6 @@ def getOrder(orderSequence):
         ORDER.append(orderSequence[i])
 
 
-def getSolutionFileName():
-    return sys.argv[3].replace(".txt", "") + "_" + sys.argv[1] + "_" + sys.argv[2] + "_sol.txt"
-
-
-def getStatisticsFileName():
-    return sys.argv[3].replace(".txt", "") + "_" + sys.argv[1] + "_" + sys.argv[2] + "_stats.txt"
-
-
 def writeStatistics(fileName, result):
     file = open(fileName, 'w')
     for i in range(1, len(result)):
@@ -287,8 +279,8 @@ def writeStatistics(fileName, result):
             file.write(str(len(result[i])))
             file.write("\n")
         elif i == 5:
-                time = result[i]/1000
-                file.write("{:.3f}".format(time))
+            time = result[i] / 1000
+            file.write("{:.3f}".format(time))
         else:
             line = str(result[i])
             file.write(line)
@@ -314,14 +306,14 @@ if __name__ == '__main__':
     if sys.argv[1] == 'bfs':
         getOrder(sys.argv[2])
         solution = bfs(root, 0)
-        writeSolution(getSolutionFileName(), solution)
-        writeStatistics(getStatisticsFileName(), solution)
+        writeSolution(sys.argv[4], solution)
+        writeStatistics(sys.argv[5], solution)
     elif sys.argv[1] == 'dfs':
         getOrder(sys.argv[2])
         solution = dfs(root, [], [], 0, time.time_ns(), 0)
-        writeSolution(getSolutionFileName(), solution)
-        writeStatistics(getStatisticsFileName(), solution)
+        writeSolution(sys.argv[4], solution)
+        writeStatistics(sys.argv[5], solution)
     elif sys.argv[1] == 'astar':
         solution = astar(root, sys.argv[2], [], time.time_ns())
-        writeSolution(getSolutionFileName(), solution)
-        writeStatistics(getStatisticsFileName(), solution)
+        writeSolution(sys.argv[4], solution)
+        writeStatistics(sys.argv[5], solution)
