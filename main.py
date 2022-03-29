@@ -211,6 +211,11 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
     openList.append(node)
     while openList:
         currentNode = min(openList, key=lambda node: node.totalCost)
+        processedStates += 1
+        depthCounter += 1
+        if currentNode.birthMove is not None:
+            way.append(currentNode.birthMove)
+        print(currentNode.board)
         openList.remove(currentNode)
         closedList.append(currentNode)
 
@@ -232,10 +237,6 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
             if child in openList:
                 if child.gCost > min(openList, key=lambda node: node.totalCost).gCost:
                     continue
-            processedStates += 1
-            depthCounter += 1
-            way.append(child.birthMove)
-            print(child.board)
             openList.append(child)
 
     return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
