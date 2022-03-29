@@ -1,5 +1,3 @@
-import heapq
-from collections import deque
 import copy
 import sys
 import time
@@ -48,7 +46,7 @@ def check(board, solvedBoard):
 
 
 class Node:
-    def __init__(self, board, parent=None, birthMove=None, depth=0):
+    def __init__(self, board, parent=None, birthMove=None):
         self.board = board
         self.isBoardCorrect = check(self.board, SOLVEDBOARD)
         self.parent = parent
@@ -59,8 +57,10 @@ class Node:
         self.downChild = None
         self.children = []
         self.visited = False
-        self.depth = depth
-        self.cost = 0
+        self.depthCounter = 0
+        self.gCost = 0
+        self.hCost = 0
+        self.totalCost = 0
 
     def makeChild(self, board, birthMove):
         child = Node(board, self, birthMove)
@@ -122,32 +122,6 @@ class Node:
             if self.birthMove == "U":
                 return None
             self.move(move)
-
-    def backMove(self):
-        findZero(self.board)
-        y = BLANK['row']
-        x = BLANK['col']
-        if self.birthMove == 'L':
-            if x == 3:
-                return None
-            self.board[y][x], self.board[y][x + 1] = self.board[y][x + 1], self.board[y][x]
-        elif self.birthMove == 'R':
-            if x == 0:
-                return None
-            self.board[y][x], self.board[y][x - 1] = self.board[y][x - 1], self.board[y][x]
-        elif self.birthMove == 'U':
-            if y == 3:
-                return None
-            self.board[y][x], self.board[y + 1][x] = self.board[y + 1][x], self.board[y][x]
-        elif self.birthMove == 'D':
-            if y == 0:
-                return None
-            self.board[y][x], self.board[y - 1][x] = self.board[y - 1][x], self.board[y][x]
-        self.children.clear()
-        self.leftChild = None
-        self.rightChild = None
-        self.upChild = None
-        self.downChild = None
 
 
 def dfs(node, startTime):
@@ -250,33 +224,41 @@ def hammingDist(matrix, modelMatrix):
     return diffCounter
 
 
-def heapsort(iterable):
-    h = []
-    for value in iterable:
-        heapq.heappush(h, value)
-    return [heapq.heappop(h) for i in range(len(h))]
-
 
 def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, depthCounter=0):
-    h = []
-    while check(node.board, SOLVEDBOARD) is False:
-        for o in ORDER:
-            node.restrictMovement(o)
-            visitedStates += 1
-        for child in node.children:
-            cost = 0
-            if heuristic == "manh":
-                cost = depthCounter + manhattanDist(child.board, SOLVEDBOARD)
-            if heuristic == "hamm":
-                cost = depthCounter + hammingDist(child.board, SOLVEDBOARD)
-            heapq.heappush(h, (cost, copy.deepcopy(child.board), child.birthMove))
-            child.backMove()
-        heapsort(h)
-        result = heapq.heappop(h)
-        node.board = result[1]
-        way.append(result[2])
+    openList = []
+    closedList = []
+    openList.append(node)
+    while openList:
+        currentNode = min(openList, key=lambda node: node.totalCost)
         processedStates += 1
         depthCounter += 1
+        if currentNode.birthMove is not None:
+            way.append(currentNode.birthMove)
+        print(currentNode.board)
+        openList.remove(currentNode)
+        closedList.append(currentNode)
+
+        if check(currentNode.board, SOLVEDBOARD) is True:
+            print(currentNode.board)
+            return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
+
+        for o in ORDER:
+            currentNode.restrictMovement(o)
+            visitedStates += 1
+        for child in currentNode.children:
+            child.gCost = currentNode.gCost + 1
+            if heuristic == "manh":
+                child.hCost = manhattanDist(child.board, SOLVEDBOARD)
+            if heuristic == "hamm":
+                child.hCost = hammingDist(child.board, SOLVEDBOARD)
+            child.totalCost = child.gCost + child.hCost
+
+            if child in openList:
+                if child.gCost > min(openList, key=lambda node: node.totalCost).gCost:
+                    continue
+            openList.append(child)
+
     return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
 
 
