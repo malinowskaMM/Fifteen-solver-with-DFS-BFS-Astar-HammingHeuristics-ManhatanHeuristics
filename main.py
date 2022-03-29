@@ -1,5 +1,5 @@
-import copy
 import heapq
+import copy
 import sys
 import time
 
@@ -292,7 +292,7 @@ def writeSolution(fileName, result):
 
 if __name__ == '__main__':
     readFromFileToBoard(sys.argv[3])
-    ORDER = ['L', 'R', 'D', 'U']
+    ORDER = ['L', 'U', 'D', 'R']
     findZero(STARTBOARD)
     root = Node(STARTBOARD)
     if sys.argv[1] == 'bfs':
@@ -302,7 +302,7 @@ if __name__ == '__main__':
         writeStatistics(sys.argv[5], solution)
     elif sys.argv[1] == 'dfs':
         getOrder(sys.argv[2])
-        solution = dfs(root, [], [], 0, time.time_ns(), 0)
+        solution = dfs(root, time.time_ns())
         writeSolution(sys.argv[4], solution)
         writeStatistics(sys.argv[5], solution)
     elif sys.argv[1] == 'astar':
