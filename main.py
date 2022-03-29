@@ -1,6 +1,7 @@
 import copy
 import sys
 import time
+from collections import deque
 
 STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
@@ -61,6 +62,7 @@ class Node:
         self.gCost = 0
         self.hCost = 0
         self.totalCost = 0
+        self.depth = 0
 
     def makeChild(self, board, birthMove):
         child = Node(board, self, birthMove)
@@ -235,12 +237,10 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
         depthCounter += 1
         if currentNode.birthMove is not None:
             way.append(currentNode.birthMove)
-        print(currentNode.board)
         openList.remove(currentNode)
         closedList.append(currentNode)
 
         if check(currentNode.board, SOLVEDBOARD) is True:
-            print(currentNode.board)
             return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
 
         for o in ORDER:
