@@ -8,7 +8,6 @@ SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12
 BLANK = {}
 ORDER = []
 MAXDEPTH = 20
-DFS_MOVE_COUNTER = 0
 
 
 def readFromFileToBoard(fileName):
@@ -19,6 +18,8 @@ def readFromFileToBoard(fileName):
     file.seek(5)  # set postion at the beginning of second line of file
     for line in file:
         STARTBOARD.append(line.split())  # every line is a table with char values
+
+    return STARTBOARD
 
 
 def writeBoardToFile(fileName, board):
@@ -37,6 +38,9 @@ def findZero(board):
             if board[row][col] == '0':
                 BLANK['row'] = row
                 BLANK['col'] = col
+                break
+
+    return BLANK
 
 
 def check(board, solvedBoard):
@@ -128,9 +132,9 @@ class Node:
 
 def dfs(node, startTime):
     isSolutionFound = False
-    visitedStates = deque()
+    visitedStatesCount = 0
     nodeList = deque()
-    way = []
+    way = deque()
     nodeList.append(node)
     processedStateCounter = 0
     solutionDepth = -1
@@ -138,30 +142,31 @@ def dfs(node, startTime):
 
     while nodeList and not isSolutionFound:
         currentNode = nodeList.pop()
-        if currentNode in visitedStates:
+        if currentNode.visited:
             continue
-        visitedStates.append(currentNode)
-
+        currentNode.visited = True
+        visitedStatesCount += 1
         # -------- process currentNode --------
         processedStateCounter += 1
-        if currentNode.birthMove is not None:
-            way.append(currentNode.birthMove)
-            isSolutionFound = currentNode.isBoardCorrect
+        isSolutionFound = currentNode.isBoardCorrect
         if isSolutionFound:
             solution = currentNode.board
             solutionDepth = currentNode.depth
+            wayNode = currentNode
+            for i in range(solutionDepth):
+                way.appendleft(wayNode.birthMove)
+                wayNode = wayNode.parent
             continue
         if currentNode.depth < MAXDEPTH:
             for o in ORDER:
                 currentNode.restrictMovement(o)
         # -------------------------------------
         for child in currentNode.children:
-            if child not in visitedStates:
+            if not child.visited:
                 nodeList.append(child)
 
     elapsedTime = time.time_ns() - startTime
-    print(solution)
-    return [solution, way, len(visitedStates), processedStateCounter, solutionDepth, elapsedTime]
+    return [solution, way, visitedStatesCount, processedStateCounter, solutionDepth, elapsedTime]
 
 
 def bfs(node, processedStates=0):
