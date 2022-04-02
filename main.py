@@ -7,7 +7,7 @@ STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 BLANK = {}
 ORDER = []
-MAXDEPTH = 20
+MAXDEPTH = 10
 
 
 def readFromFileToBoard(fileName):
@@ -130,6 +130,14 @@ class Node:
             self.move(move)
 
 
+def boardToStr(board):
+    result = ""
+    for row in board:
+        for val in row:
+            result = f'{result}{val}'
+    return result
+
+
 def dfs(node, startTime):
     isSolutionFound = False
     visitedStatesCount = 0
@@ -139,6 +147,7 @@ def dfs(node, startTime):
     processedStateCounter = 0
     solutionDepth = -1
     solution = -1
+    # checkedStates = {}
 
     while nodeList and not isSolutionFound:
         currentNode = nodeList.pop()
@@ -157,6 +166,16 @@ def dfs(node, startTime):
                 way.appendleft(wayNode.birthMove)
                 wayNode = wayNode.parent
             continue
+        # -------- check if occured earlier --------
+        # boardStr = boardToStr(currentNode.board)
+        # if boardStr in checkedStates:
+        #     # print("taki board juz sie pojawil")
+        #     earlierDepth = checkedStates[boardStr]
+        #     if earlierDepth < currentNode.depth:
+        #         # print("i byl plyciej")
+        #         continue
+
+        # checkedStates[boardStr] = currentNode.depth
         if currentNode.depth < MAXDEPTH:
             for o in ORDER:
                 currentNode.restrictMovement(o)
