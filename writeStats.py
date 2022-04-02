@@ -3,10 +3,10 @@ from os import listdir
 import time
 import cProfile
 
-m.ORDER = ['D', 'R', 'L', 'U']
+m.ORDER = ['L', 'U', 'R', 'D']
 
 inputPath = 'F:\Studia\sem4\SISE\Projekt_SISE\puzzles'
-outputFilename = 'F:\Studia\sem4\SISE\Projekt_SISE\output_DFS_DRLU.csv'
+outputFilename = 'F:\Studia\sem4\SISE\Projekt_SISE\output_BFS_LURD.csv'
 inputFiles = listdir(inputPath)
 
 outputFile = open(outputFilename, 'a')
@@ -15,11 +15,10 @@ for inputFile in inputFiles:
     counter += 1
     m.STARTBOARD = []
     m.STARTBOARD = m.readFromFileToBoard('puzzles/'+inputFile)
-    # m.STARTBOARD = m.readFromFileToBoard('puzzles/4x4_03_00004.txt')
     m.BLANK = m.findZero(m.STARTBOARD)
     root = m.Node(m.STARTBOARD)
 
-    solution = m.dfs(root, time.time_ns())
+    solution = m.bfs(root)
     wayLen = len(solution[1])
     visitedStatesCount = solution[2]
     processedStatesCount = solution[3]

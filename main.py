@@ -145,9 +145,7 @@ def dfs(node, startTime):
     way = deque()
     nodeList.append(node)
     processedStateCounter = 0
-    solutionDepth = -1
     solution = -1
-    # checkedStates = {}
 
     while nodeList and not isSolutionFound:
         currentNode = nodeList.pop()
@@ -166,16 +164,7 @@ def dfs(node, startTime):
                 way.appendleft(wayNode.birthMove)
                 wayNode = wayNode.parent
             continue
-        # -------- check if occured earlier --------
-        # boardStr = boardToStr(currentNode.board)
-        # if boardStr in checkedStates:
-        #     # print("taki board juz sie pojawil")
-        #     earlierDepth = checkedStates[boardStr]
-        #     if earlierDepth < currentNode.depth:
-        #         # print("i byl plyciej")
-        #         continue
 
-        # checkedStates[boardStr] = currentNode.depth
         if currentNode.depth < MAXDEPTH:
             for o in ORDER:
                 currentNode.restrictMovement(o)
@@ -191,7 +180,6 @@ def dfs(node, startTime):
 def bfs(node, processedStates=0):
     way = deque()
     startTime = time.time_ns()
-    solutionDepth = -1
     if node is not None:
         visitedStates = []
         listOfNodes = []
@@ -207,7 +195,6 @@ def bfs(node, processedStates=0):
                 vertex.restrictMovement(o)
             for child in vertex.children:
                 if child.isBoardCorrect is True:
-                    print(child.board)
                     solutionDepth = child.depth
                     wayNode = child
                     for i in range(solutionDepth):
