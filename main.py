@@ -189,30 +189,32 @@ def dfs(node, startTime):
 
 
 def bfs(node, processedStates=0):
-    way = []
+    way = deque()
     startTime = time.time_ns()
-    depthCounter = 0
+    solutionDepth = -1
     if node is not None:
         visitedStates = []
         listOfNodes = []
         visitedStates.append(node)
         processedStates += 1
-        depthCounter += 1
         listOfNodes.append(node)
         discoveredSolutionFlag = node.isBoardCorrect
         while listOfNodes and discoveredSolutionFlag is False:
             vertex = listOfNodes.pop(0)
             processedStates += 1
-            depthCounter += 1
-            if vertex.birthMove is not None:
-                way.append(vertex.birthMove)
             discoveredSolutionFlag = vertex.isBoardCorrect
             for o in ORDER:
                 vertex.restrictMovement(o)
             for child in vertex.children:
                 if child.isBoardCorrect is True:
                     print(child.board)
-                    return [child.board, way, len(visitedStates), processedStates, depthCounter,
+                    solutionDepth = child.depth
+                    wayNode = child
+                    for i in range(solutionDepth):
+                        way.appendleft(wayNode.birthMove)
+                        wayNode = wayNode.parent
+
+                    return [child.board, way, len(visitedStates), processedStates, solutionDepth,
                             time.time_ns() - startTime]
                 if child not in visitedStates:
                     visitedStates.append(child)
