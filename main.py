@@ -192,6 +192,7 @@ def bfs(node, processedStates=0):
                 vertex.restrictMovement(o)
             for child in vertex.children:
                 if child.isBoardCorrect is True:
+                    print(child.board)
                     return [child.board, way, len(visitedStates), processedStates, depthCounter,
                             time.time_ns() - startTime]
                 if child not in visitedStates:
@@ -236,6 +237,7 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
     openList = []
     closedList = []
     openList.append(node)
+    visitedStates += 1
     while openList:
         currentNode = min(openList, key=lambda node: node.totalCost)
         processedStates += 1
@@ -246,7 +248,7 @@ def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, d
         closedList.append(currentNode)
 
         if check(currentNode.board, SOLVEDBOARD) is True:
-            return [node.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
+            return [currentNode.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
 
         for o in ORDER:
             currentNode.restrictMovement(o)
