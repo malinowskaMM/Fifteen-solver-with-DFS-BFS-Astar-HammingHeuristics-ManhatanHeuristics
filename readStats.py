@@ -61,7 +61,6 @@ DFS_ULDR = dataAlgo('output_DFS_ULDR.csv')
 DFS_ULRD = dataAlgo('output_DFS_ULRD.csv')
 
 DFS = [DFS_DRLU, DFS_DRUL, DFS_LUDR, DFS_LURD, DFS_RDLU, DFS_RDUL, DFS_ULDR, DFS_ULRD]
-# print(BFS_DRLU['moves'][3])
 
 moveOrders = [['D', 'R', 'L', 'U'],
               ['D', 'R', 'U', 'L'],
@@ -70,8 +69,8 @@ moveOrders = [['D', 'R', 'L', 'U'],
               ['R', 'D', 'L', 'U'],
               ['R', 'D', 'U', 'L'],
               ['U', 'L', 'D', 'R'],
-              ['L', 'U', 'R', 'D']]
-labels = ['DRLU', 'DRUL', 'LUDR', 'LURD', 'RDLU', 'RDUL', 'ULDR', 'LURD']
+              ['U', 'L', 'R', 'D']]
+labels = ['DRLU', 'DRUL', 'LUDR', 'LURD', 'RDLU', 'RDUL', 'ULDR', 'ULRD']
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', (0.3, 0.4, 0.2, 1)]
 # ---------------------- PLOT GENERATION ----------------------
 
@@ -98,29 +97,30 @@ def bigPlots(algo, attribute):
         color=colors[i],
         label=labels[i])
 
-    plt.yscale("log")
+    # plt.yscale("log")
     plt.xlabel('Stopień pomieszania planszy')
-    plt.ylabel('Czas')
-    plt.title('Czas przetwarzania BFS')
+    plt.ylabel('Stany przetworzone')
+    plt.title('Ilość stanów przetworzonych DFS')
     plt.xticks(index + bar_width, ('1', '2', '3', '4', '5', '6', '7'))
     plt.legend()
 
     plt.tight_layout()
     plt.show()
 
-bigPlots(BFS, 'time')
+# bigPlots(DFS, 'processed')
 
 
 # ------------------ PLOT ASTAR ------------------
 # n_groups = 7
+# attribute = 'processed'
 #
 # bar1 = []
 # for i in range(1, 8):
-#     bar1.append(astar_hamm['moves'][i])
+#     bar1.append(astar_hamm[attribute][i])
 #
 # bar2 = []
 # for i in range(1, 8):
-#     bar2.append(astar_manh['moves'][i])
+#     bar2.append(astar_manh[attribute][i])
 #
 # # create plot
 # # plt.yscale('log')
@@ -140,8 +140,8 @@ bigPlots(BFS, 'time')
 # label='Manhattan')
 #
 # plt.xlabel('Stopień pomieszania planszy')
-# plt.ylabel('Długość rozwiązania')
-# plt.title('Długość rozwiązania A*')
+# plt.ylabel('Stany przetworzone')
+# plt.title('Liczba stanów przetworzonych A*')
 # plt.xticks(index + bar_width, ('1', '2', '3', '4', '5', '6', '7'))
 # plt.legend()
 #
@@ -150,57 +150,57 @@ bigPlots(BFS, 'time')
 
 # ------------------ PLOT THREE ON ONE ------------------
 
-# n_groups = 7
-#
-# attribute = 'visited'
-# bar1 = []
-# for i in range(1, 8):
-#     val = astar_hamm[attribute][i] + astar_manh[attribute][i]
-#     if val < 0:
-#         val = 0
-#     bar1.append(val/2)
-#
-# bar2 = []
-# for i in range(1, 8):
-#     val = DFS_DRLU[attribute][i]+DFS_DRUL[attribute][i]+DFS_LUDR[attribute][i]+DFS_LURD[attribute][i]+DFS_RDLU[attribute][i]+DFS_RDUL[attribute][i]+DFS_ULDR[attribute][i]+DFS_ULRD[attribute][i]
-#     if val < 0:
-#         val = 0
-#     bar2.append(val/8)
-#
-# bar3 = []
-# for i in range(1, 8):
-#     val = BFS_DRLU[attribute][i]+BFS_DRUL[attribute][i]+BFS_LUDR[attribute][i]+BFS_LURD[attribute][i]+BFS_RDLU[attribute][i]+BFS_RDUL[attribute][i]+BFS_ULDR[attribute][i]+BFS_ULRD[attribute][i]
-#     if val < 0:
-#         val = 0
-#     bar3.append(val/8)
-#
-# # create plot
-# plt.yscale('log')
-# fig, ax = plt.subplots()
-# index = np.arange(n_groups)
-# bar_width = 0.2
-# opacity = 0.8
-#
-# rects1 = plt.bar(index, bar1, bar_width,
-# alpha=opacity,
-# color='b',
-# label='A*')
-#
-# rects2 = plt.bar(index + bar_width, bar2, bar_width,
-# alpha=opacity,
-# color='g',
-# label='DFS')
-#
-# rects3 = plt.bar(index + 2*bar_width, bar3, bar_width,
-# alpha=opacity,
-# color='r',
-# label='BFS')
-#
-# plt.xlabel('Stopień pomieszania planszy')
-# plt.ylabel('Liczba stanów')
-# plt.title('Liczba stanów odwiedzonych ogółem')
-# plt.xticks(index + bar_width, ('1', '2', '3', '4', '5', '6', '7'))
-# plt.legend()
-#
-# plt.tight_layout()
-# plt.show()
+n_groups = 7
+
+attribute = 'visited'
+bar1 = []
+for i in range(1, 8):
+    val = astar_hamm[attribute][i] + astar_manh[attribute][i]
+    if val < 0:
+        val = 0
+    bar1.append(val/2)
+
+bar2 = []
+for i in range(1, 8):
+    val = DFS_DRLU[attribute][i]+DFS_DRUL[attribute][i]+DFS_LUDR[attribute][i]+DFS_LURD[attribute][i]+DFS_RDLU[attribute][i]+DFS_RDUL[attribute][i]+DFS_ULDR[attribute][i]+DFS_ULRD[attribute][i]
+    if val < 0:
+        val = 0
+    bar2.append(val/8)
+
+bar3 = []
+for i in range(1, 8):
+    val = BFS_DRLU[attribute][i]+BFS_DRUL[attribute][i]+BFS_LUDR[attribute][i]+BFS_LURD[attribute][i]+BFS_RDLU[attribute][i]+BFS_RDUL[attribute][i]+BFS_ULDR[attribute][i]+BFS_ULRD[attribute][i]
+    if val < 0:
+        val = 0
+    bar3.append(val/8)
+
+# create plot
+plt.yscale('log')
+fig, ax = plt.subplots()
+index = np.arange(n_groups)
+bar_width = 0.2
+opacity = 0.8
+
+rects1 = plt.bar(index, bar1, bar_width,
+alpha=opacity,
+color='b',
+label='A*')
+
+rects2 = plt.bar(index + bar_width, bar2, bar_width,
+alpha=opacity,
+color='g',
+label='DFS')
+
+rects3 = plt.bar(index + 2*bar_width, bar3, bar_width,
+alpha=opacity,
+color='r',
+label='BFS')
+
+plt.xlabel('Stopień pomieszania planszy')
+plt.ylabel('Stany odwiedzone')
+plt.title('Ilość stanów odwiedzonych ogółem')
+plt.xticks(index + bar_width, ('1', '2', '3', '4', '5', '6', '7'))
+plt.legend()
+
+plt.tight_layout()
+plt.show()
