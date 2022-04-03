@@ -248,23 +248,28 @@ def hammingDist(matrix, modelMatrix):
     return diffCounter
 
 
-
-def astar(node, heuristic, way, startTime, processedStates=0, visitedStates=0, depthCounter=0):
+def astar(node, heuristic, startTime, processedStates=0, visitedStates=0, depthCounter=0):
     openList = []
     closedList = []
+    way = deque()
+    maxDepth = -1
     openList.append(node)
     visitedStates += 1
     while openList:
         currentNode = min(openList, key=lambda node: node.totalCost)
         processedStates += 1
         depthCounter += 1
-        if currentNode.birthMove is not None:
-            way.append(currentNode.birthMove)
         openList.remove(currentNode)
         closedList.append(currentNode)
+        if currentNode.depth > maxDepth: maxDepth = currentNode.depth
 
         if check(currentNode.board, SOLVEDBOARD) is True:
-            return [currentNode.board, way, visitedStates, processedStates, depthCounter, time.time_ns() - startTime]
+            wayNode = currentNode
+            while wayNode.parent is not None:
+                way.appendleft(wayNode.birthMove)
+                wayNode = wayNode.parent
+
+            return [currentNode.board, way, visitedStates, processedStates, maxDepth, time.time_ns() - startTime]
 
         for o in ORDER:
             currentNode.restrictMovement(o)
@@ -332,6 +337,6 @@ if __name__ == '__main__':
         writeSolution(sys.argv[4], solution)
         writeStatistics(sys.argv[5], solution)
     elif sys.argv[1] == 'astar':
-        solution = astar(root, sys.argv[2], [], time.time_ns())
+        solution = astar(root, sys.argv[2], time.time_ns())
         writeSolution(sys.argv[4], solution)
         writeStatistics(sys.argv[5], solution)
