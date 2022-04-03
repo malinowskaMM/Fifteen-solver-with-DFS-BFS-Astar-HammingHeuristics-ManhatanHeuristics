@@ -62,7 +62,6 @@ class Node:
         self.downChild = None
         self.children = []
         self.visited = False
-        self.depthCounter = 0
         self.gCost = 0
         self.hCost = 0
         self.totalCost = 0
@@ -141,6 +140,7 @@ def boardToStr(board):
 def dfs(node, startTime):
     isSolutionFound = False
     visitedStatesCount = 0
+    maximumDepth = 0
     nodeList = deque()
     way = deque()
     nodeList.append(node)
@@ -152,6 +152,8 @@ def dfs(node, startTime):
         if currentNode.visited:
             continue
         currentNode.visited = True
+        if maximumDepth < currentNode.depth:
+            maximumDepth = currentNode.depth
         visitedStatesCount += 1
         # -------- process currentNode --------
         processedStateCounter += 1
@@ -174,11 +176,12 @@ def dfs(node, startTime):
                 nodeList.append(child)
 
     elapsedTime = time.time_ns() - startTime
-    return [solution, way, visitedStatesCount, processedStateCounter, solutionDepth, elapsedTime]
+    return [solution, way, visitedStatesCount, processedStateCounter, maximumDepth, elapsedTime]
 
 
 def bfs(node, processedStates=0):
     way = deque()
+    maximumDepth = 0
     startTime = time.time_ns()
     if node is not None:
         visitedStates = []
@@ -189,6 +192,8 @@ def bfs(node, processedStates=0):
         discoveredSolutionFlag = node.isBoardCorrect
         while listOfNodes and discoveredSolutionFlag is False:
             vertex = listOfNodes.pop(0)
+            if maximumDepth < vertex.depth:
+                maximumDepth = vertex.depth
             processedStates += 1
             discoveredSolutionFlag = vertex.isBoardCorrect
             for o in ORDER:
@@ -197,11 +202,13 @@ def bfs(node, processedStates=0):
                 if child.isBoardCorrect is True:
                     solutionDepth = child.depth
                     wayNode = child
+                    if maximumDepth < child.depth:
+                        maximumDepth = child.depth
                     for i in range(solutionDepth):
                         way.appendleft(wayNode.birthMove)
                         wayNode = wayNode.parent
 
-                    return [child.board, way, len(visitedStates), processedStates, solutionDepth,
+                    return [child.board, way, len(visitedStates), processedStates, maximumDepth,
                             time.time_ns() - startTime]
                 if child not in visitedStates:
                     visitedStates.append(child)
