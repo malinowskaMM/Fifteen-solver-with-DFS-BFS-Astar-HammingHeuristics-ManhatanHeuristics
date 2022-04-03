@@ -7,7 +7,7 @@ STARTBOARD = []
 SOLVEDBOARD = [['1', '2', '3', '4'], ['5', '6', '7', '8'], ['9', '10', '11', '12'], ['13', '14', '15', '0']]
 BLANK = {}
 ORDER = []
-MAXDEPTH = 10
+MAXDEPTH = 20
 
 
 def readFromFileToBoard(fileName):
@@ -207,7 +207,8 @@ def bfs(node, processedStates=0):
                     for i in range(solutionDepth):
                         way.appendleft(wayNode.birthMove)
                         wayNode = wayNode.parent
-
+                    print([child.board, way, len(visitedStates), processedStates, maximumDepth,
+                            time.time_ns() - startTime])
                     return [child.board, way, len(visitedStates), processedStates, maximumDepth,
                             time.time_ns() - startTime]
                 if child not in visitedStates:
